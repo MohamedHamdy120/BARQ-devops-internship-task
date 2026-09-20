@@ -26,5 +26,5 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Root cause: Log files are not sorted by timestamp. A format variant exists at access.log:311 (timestamp without milliseconds).
 - Fix: Compute min/max by extracting timestamps and sorting.
 - Retest evidence: `analysis/q1_interval.txt` shows consistent min/max across access.log and application.log (11:00:00.015Z → 11:29:57.578Z).
-- Related commit: log_analysis: Q1 interval; troubleshooting: log ordering check
+- Related commit: 97fac56 — "log_analysis: Q1 interval; troubleshooting: log ordering check"
 - Remaining uncertainty: Whether access.log:311 is malformed or a valid variant — to be decided in Q1 sub-task 2.
