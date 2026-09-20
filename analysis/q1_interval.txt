@@ -1,0 +1,9 @@
+=== access.log ===
+"timestamp":"2026-08-20T11:00:00.015Z"
+"timestamp":"2026-08-20T11:29:57.578Z"
+=== application.log ===
+"timestamp": "2026-08-20T11:00:00.015Z"
+"timestamp": "2026-08-20T11:29:57.578Z"
+=== error.log ===
+2026/08/20 11:05:02 [error] 31#31: *122 connect() failed (111: Connection refused) while connecting to upstream, request_id=lab-000122, request: "GET /health HTTP/1.1", upstream: "http://172.23.0.12:8080/health"
+2026/08/20 11:30:00 [notice] 31#31: log collector rotated stream
