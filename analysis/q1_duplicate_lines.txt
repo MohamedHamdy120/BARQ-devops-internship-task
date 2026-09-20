@@ -1,0 +1,3 @@
+logs/access.log: total=726 duplicates=10
+logs/application.log: total=730 duplicates=4
+logs/error.log: total=68 duplicates=0

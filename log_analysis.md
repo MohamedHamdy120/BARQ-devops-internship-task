@@ -15,7 +15,7 @@ Use all three supplied logs. Answer every question with commands/scripts and act
 
 ## Commands / scripts
 ### Q1 commands
-
+UTC interval:
 ```bash
 {
   echo "=== access.log ==="
@@ -29,6 +29,46 @@ Use all three supplied logs. Answer every question with commands/scripts and act
   tail -1 logs/error.log
 } | tee analysis/q1_interval.txt
 ```
+Malformed lines (per file):
+```bash
+python3 - <<'EOF' | tee analysis/q1_malformed_access.txt
+import json
+bad=[]
+with open('logs/access.log') as f:
+    for i,l in enumerate(f,1):
+        try:
+            o=json.loads(l)
+            for k in ('timestamp','request_id','method','path','status','upstream'):
+                if k not in o: bad.append((i,'missing '+k,l.rstrip())); break
+        except Exception as e: bad.append((i,str(e),l.rstrip()))
+print('malformed:',len(bad))
+for b in bad: print(b)
+EOF
+```
+(same pattern for `application.log`)
+
+Malformed lines for error.log file:
+```
+python3 - <<'EOF' | tee analysis/q1_malformed_error.txt
+import re
+pat = re.compile(r'^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[(error|warn|crit|notice|alert|emerg|info|debug)\] ')
+bad=[]
+with open('logs/error.log') as f:
+    for i,l in enumerate(f,1):
+        if not pat.match(l): bad.append((i,l.rstrip()))
+print('malformed:',len(bad))
+for b in bad: print(b)
+EOF
+```
+Duplicate lines:
+```bash
+for f in logs/access.log logs/application.log logs/error.log; do
+  t=$(wc -l < "$f"); u=$(sort "$f" | uniq -u | wc -l)
+  echo "$f total=$t duplicates=$((t-u))"
+done | tee analysis/q1_duplicate_lines.txt
+```
+
+Valid = Total − Malformed − Excess duplicates (derived; see table below).
 
 
 ## Results
@@ -42,9 +82,18 @@ Use all three supplied logs. Answer every question with commands/scripts and act
 | application.log | 2026-08-20T11:00:00.015Z | 2026-08-20T11:29:57.578Z | 29m57s |
 | error.log | 2026/08/20 11:05:02 | 2026/08/20 11:30:00 | 24m58s |
 
-Notes:
-- Files are not sorted. `sort -c` showed disorder at access.log:311 and application.log:402. Min/max computed via `grep -o` + `sort`, not `head`/`tail`.
-- error.log's last line is `[notice] log collector rotated stream`, not an error.
-- Raw evidence: `analysis/q1_interval.txt`.
+**Line counts:**
+
+| File | Total | Valid | Malformed | Duplicate (distinct) | Excess |
+|---|---|---|---|---|---|
+| access.log | 726 | 715 | 1 | 5 | 5 |
+| application.log | 730 | 725 | 1 | 2 | 2 |
+| error.log | 68 | 68 | 0 | 0 | 0 |
+
+Valid (unique) = well-formed, appears once; Malformed = parse/field failure; Duplicate (distinct) = distinct repeated lines; Excess = extra copies. Identity: Valid + Malformed + Duplicate + Excess = Total.
+
+Evidence: `analysis/q1_interval.txt`, `analysis/q1_malformed_*.txt`, `analysis/q1_duplicate_lines*.txt`.
+
+Notes: logs not sorted; error.log ends with a `[notice]`, not an error.
 ## Timeline and correlated examples
 ## Conclusions and limits

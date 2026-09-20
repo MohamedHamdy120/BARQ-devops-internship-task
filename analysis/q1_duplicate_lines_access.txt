@@ -1,0 +1,5 @@
+{"timestamp":"2026-08-20T11:05:00.055Z","request_id":"lab-000121","method":"GET","path":"/","status":200,"upstream":"172.23.0.11:8080","upstream_status":"200","request_time":0.055,"client":"192.0.2.24"}
+{"timestamp":"2026-08-20T11:10:00.015Z","request_id":"lab-000241","method":"GET","path":"/","status":200,"upstream":"172.23.0.11:8080","upstream_status":"200","request_time":0.015,"client":"192.0.2.24"}
+{"timestamp":"2026-08-20T11:15:00.055Z","request_id":"lab-000361","method":"GET","path":"/","status":200,"upstream":"172.23.0.11:8080","upstream_status":"200","request_time":0.055,"client":"192.0.2.24"}
+{"timestamp":"2026-08-20T11:20:00.015Z","request_id":"lab-000481","method":"GET","path":"/","status":200,"upstream":"172.23.0.11:8080","upstream_status":"200","request_time":0.015,"client":"192.0.2.24"}
+{"timestamp":"2026-08-20T11:25:00.055Z","request_id":"lab-000601","method":"GET","path":"/","status":200,"upstream":"172.23.0.11:8080","upstream_status":"200","request_time":0.055,"client":"192.0.2.24"}

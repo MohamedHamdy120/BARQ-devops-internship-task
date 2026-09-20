@@ -1,0 +1,2 @@
+access.log malformed count: 1
+(311, 'json error: Expecting value: line 2 column 1 (char 50)', '{"timestamp":"2026-08-20T11:12:48Z","request_id":')

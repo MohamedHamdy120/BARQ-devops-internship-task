@@ -16,7 +16,7 @@ Keep chronological entries. Copy this block for each meaningful investigation.
 
 Do not fabricate a failed attempt just to fill the template. Record actual attempts.
 
-## 2026-08-20 — Log ordering check (before Q1)
+## Log ordering check (analysis Q1) / 2026-08-20 / 5:50 pm
 
 - Symptom: Needed first/last timestamps per log to answer Q1 interval.
 - Hypothesis: Files are sorted by timestamp, so `head`/`tail` are sufficient.

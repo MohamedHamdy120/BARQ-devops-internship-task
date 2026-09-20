@@ -1,0 +1,2 @@
+{"timestamp": "2026-08-20T11:07:30.035Z", "level": "INFO", "event": "http_request", "request_id": "lab-000181", "instance_id": "app-01", "method": "GET", "path": "/", "status": 200, "duration_ms": 35.0}
+{"timestamp": "2026-08-20T11:17:30.035Z", "level": "INFO", "event": "http_request", "request_id": "lab-000421", "instance_id": "app-01", "method": "GET", "path": "/", "status": 200, "duration_ms": 35.0}

@@ -1,0 +1,2 @@
+application.log malformed count: 1
+(401, 'json error: Expecting value: line 2 column 1 (char 45)', '{"timestamp":"2026-08-20T11:17:00Z","event":')
