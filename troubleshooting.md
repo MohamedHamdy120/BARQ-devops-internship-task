@@ -40,5 +40,5 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Root cause: application.log records two log lines per failed request (dependency_error + http_request) by design, not two client attempts. No genuine retries (two `http_request` entries for the same request_id) exist in either access.log or application.log.
 - Fix: N/A — not a bug. Documented the correct dedup rule: count only `event: "http_request"` lines when counting distinct requests in application.log; a request_id repeated with an accompanying dependency_error line is still one request.
 - Retest evidence: `analysis/q2_retry_check_application.txt` (all 47 groups reviewed), `analysis/q2_distinct_counts.txt` (682 distinct requests via http_request count).
-- Related commit: Pending
+- Related commit: 18edb87 - "log_analysis: Q2 distinct requests & retry check; troubleshooting: retry misclassification entry"
 - Remaining uncertainty: Logs show no retries in this window; doesn't prove no retry mechanism exists in app/NGINX config.
