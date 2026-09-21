@@ -67,5 +67,5 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Root cause: not proven for 502 and 504. 503 causes are proven from the application log: Redis timeouts, then a PostgreSQL password rejection.
 - Fix: InvalidPassword suggests a credential or config mismatch, which I will check in Part 2.
 - Retest evidence: `analysis/q4_dependency.txt` total (47) equals the 503 count (47).
-- Related commit: Pending
+- Related commit: f237245 - "log_analysis: Q4 failures; troubleshooting: attribution entry"
 - Remaining uncertainty: what error.log says about the 502 burst on .12 and the 504s
