@@ -195,6 +195,43 @@ for k,v in sorted(c.items()): print(k,v)
 print('total:',sum(c.values()))
 EOF
 ```
+### Q5 commands
+median and p95 latency (nearest-rank)
+```bash
+python3 - <<'EOF' | tee analysis/q5_latency.txt
+import json, math
+seen=set(); allv=[]; okv=[]
+for l in open('logs/access.log'):
+    if l in seen: continue
+    seen.add(l)
+    try: o=json.loads(l); t=float(o['request_time'])
+    except: continue
+    allv.append(t)
+    if o['status']==200: okv.append(t)
+def pct(v,p):
+    v=sorted(v); return v[math.ceil(p/100*len(v))-1]  # nearest-rank
+def med(v):
+    v=sorted(v); n=len(v)
+    return v[n//2] if n%2 else (v[n//2-1]+v[n//2])/2
+for name,v in (('ALL',allv),('200 only',okv)):
+    print(f'{name}: n={len(v)} median={med(v)*1000:.0f} ms p95={pct(v,95)*1000:.0f} ms max={max(v)*1000:.0f} ms')
+EOF
+```
+latency by status
+```bash
+python3 - <<'EOF' | tee analysis/q5_by_status.txt
+import json
+from collections import defaultdict
+seen=set(); d=defaultdict(list)
+for l in open('logs/access.log'):
+    if l in seen: continue
+    seen.add(l)
+    try: o=json.loads(l); d[o['status']].append(float(o['request_time']))
+    except: continue
+for s in sorted(d):
+    v=sorted(d[s]); print(s,'n=',len(v),'median=%.0f ms'%(v[len(v)//2]*1000),'max=%.0f ms'%(v[-1]*1000))
+EOF
+```
 
 ## Results
 ### Q1 — Interval, valid/malformed/duplicate lines
@@ -269,6 +306,22 @@ Evidence: `analysis/q3_status_counts.txt`, `analysis/q3_status_final.txt`
 - Not proven yet: why .12 was unreachable, and why `/records` timed out.
 
 Evidence: `analysis/q4_failures.txt`, `analysis/q4_crosstab.txt`, `analysis/q4_dependency.txt`
+
+### Q5 — Client latency
+
+Field: `request_time` from access.log (seconds, ms resolution; time the client waited via NGINX). Converted to ms. Deduped, malformed lines excluded. Percentile method: nearest-rank (value at position ceil(p·n) in sorted list).
+
+| Set | n | Median | p95 | Max |
+|---|---|---|---|---|
+| All requests | 720 | 54 ms | 2001 ms | 2025 ms |
+| 200 only | 615 | 55 ms | 93 ms | 120 ms |
+
+- Slow requests (503 and 504) are 55 of 720 (7.6%), above the 5% tail that p95 excludes, so p95 for all requests sits inside the slow group.
+- Successful requests were fast (median 55 ms). The tail comes from 503 (47 requests, median and max both 2025 ms) and 504 (8 requests, median and max both 2001 ms). The 502s are fast (3 ms) and the 404s are normal (median 56 ms).
+- The 502 pattern (instant failure) suggests a refused connection to .12. The 504 value (2001 ms) suggests an NGINX timeout of about 2 s. Neither is proven yet; check `nginx.conf` and error.log (Q9).
+- Open question: the PostgreSQL `InvalidPassword` 503s likely share the ~2 s latency, but this was not checked per request_id. A rejected password should fail fast, so a fixed delay or retry may exist in the app. Check in Part 2.
+
+Evidence: `analysis/q5_latency.txt`, `analysis/q5_by_status.txt`
 
 ## Timeline and correlated examples
 ## Conclusions and limits
