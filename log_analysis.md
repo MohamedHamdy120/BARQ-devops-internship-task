@@ -142,6 +142,59 @@ Corrected counts (deduped) and error rate:
   echo "Error rate: $(python3 -c 'print(round(95/720*100,2))')%"
 } | tee analysis/q3_status_final.txt
 ```
+### Q4 commands
+5xx by path, minute and backend
+```bash
+python3 - <<'EOF' | tee analysis/q4_failures.txt
+import json
+from collections import Counter
+seen=set(); rows=[]
+for l in open('logs/access.log'):
+    if l in seen: continue
+    seen.add(l)
+    try: o=json.loads(l)
+    except: continue
+    if o['status']>=500: rows.append(o)
+print('5xx total:',len(rows))
+print('BY PATH   ',Counter(o['path'] for o in rows))
+print('BY MINUTE ',sorted(Counter(o['timestamp'][:16] for o in rows).items()))
+print('BY BACKEND',Counter(o['upstream'] for o in rows))
+print('PATH x STATUS',Counter((o['path'],o['status']) for o in rows))
+EOF
+```
+
+5xx by status, backend and minute
+```bash
+python3 - <<'EOF' | tee analysis/q4_crosstab.txt
+import json
+from collections import Counter
+seen=set(); c=Counter()
+for l in open('logs/access.log'):
+    if l in seen: continue
+    seen.add(l)
+    try: o=json.loads(l)
+    except: continue
+    if o['status']>=500:
+        c[(o['status'],o['upstream'],o['timestamp'][11:16])]+=1
+for k,v in sorted(c.items()): print(k,v)
+EOF
+```
+
+dependency errors by service, type and minute
+```bash
+python3 - <<'EOF' | tee analysis/q4_dependency.txt
+import json
+from collections import Counter
+c=Counter()
+for l in open('logs/application.log'):
+    try: o=json.loads(l)
+    except: continue
+    if o.get('event')=='dependency_error':
+        c[(o['dependency'],o['error_type'],o['timestamp'][11:16])]+=1
+for k,v in sorted(c.items()): print(k,v)
+print('total:',sum(c.values()))
+EOF
+```
 
 ## Results
 ### Q1 — Interval, valid/malformed/duplicate lines
@@ -196,6 +249,26 @@ Counted from access.log (client-facing responses via NGINX), deduped to 720 dist
 - **Error rate:** 95/720 = 13.19%
 
 Evidence: `analysis/q3_status_counts.txt`, `analysis/q3_status_final.txt`
+
+### Q4 — Paths, time windows and backends behind the failures
+
+95 deduped 5xx responses (denominator 720) fall into four bursts of about 8 per minute. Nothing else failed.
+
+| Window (UTC) | Status | Backend | Count | Paths | Cause seen in application.log |
+|---|---|---|---|---|---|
+| 11:05-11:09 | 502 | 172.23.0.12 only | 40 | `/`, `/health`, `/records`, `/counter` (10 each) | none |
+| 11:12-11:15 | 503 | both | 31 | `/ready`, `/counter`, `/records` | Redis `TimeoutError` (31) |
+| 11:20-11:21 | 503 | both | 16 | `/ready`, `/counter`, `/records` | PostgreSQL `InvalidPassword` (16) |
+| 11:25-11:26 | 504 | both | 8 | `/records` only | none |
+
+- By path: `/records` 26, `/counter` 26, `/ready` 23, `/health` 10, `/` 10.
+- By backend: .12 has 68 and .11 has 27. The gap is fully explained by the .12-only 502 burst.
+- The 47 503s match the 47 `dependency_error` lines exactly.
+- 502s hit `/health`, which uses no dependency, and left no `dependency_error` lines. This points to a proxy/connectivity problem between NGINX and .12, not to the app's dependencies.
+- 504s also left no `dependency_error` lines. This suggests an NGINX-side timeout, still to be checked against error.log (Q7/Q9).
+- Not proven yet: why .12 was unreachable, and why `/records` timed out.
+
+Evidence: `analysis/q4_failures.txt`, `analysis/q4_crosstab.txt`, `analysis/q4_dependency.txt`
 
 ## Timeline and correlated examples
 ## Conclusions and limits

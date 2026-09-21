@@ -56,3 +56,16 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `q3_status_counts.txt` (725), `q3_status_final.txt` (720).
 - Related commit: 7aee16c - "log_analysis: Q3 status counts and error rate"
 - Remaining uncertainty: none
+
+## Failure attribution (analysis Q4) / 2026-09-21 / 5:30 pm
+
+- Symptom: 95 5xx responses; needed to know which paths, time windows and backends account for them.
+- Hypothesis: the 502's come from both backends (shared cause such as NGINX or the network).
+- Command or test: grouped deduped 5xx by path, minute, status and upstream (`analysis/q4_failures.txt`, `analysis/q4_crosstab.txt`); then counted `dependency_error` lines by dependency and minute (`analysis/q4_dependency.txt`).
+- Actual output: all 40 502s came from 172.23.0.12 in 11:05-11:09. The 503s hit both backends at 11:12-15 and 11:20-21, and the 504s hit both at 11:25-26. The application log has 47 dependency errors: Redis TimeoutError (31) at 11:12-15 and PostgreSQL InvalidPassword (16) at 11:20-21.
+- Failed attempt and what changed your thinking: I predicted 502s on both backends. The crosstab showed .12 only; the per-backend totals (68 vs 27) had hidden this by mixing statuses. Three sample lines from application.log showed only Redis errors, so I counted all of them, which revealed a second cause (PostgreSQL InvalidPassword).
+- Root cause: not proven for 502 and 504. 503 causes are proven from the application log: Redis timeouts, then a PostgreSQL password rejection.
+- Fix: InvalidPassword suggests a credential or config mismatch, which I will check in Part 2.
+- Retest evidence: `analysis/q4_dependency.txt` total (47) equals the 503 count (47).
+- Related commit: Pending
+- Remaining uncertainty: what error.log says about the 502 burst on .12 and the 504s
