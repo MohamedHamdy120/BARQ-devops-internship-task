@@ -54,5 +54,5 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Root cause: Dedup must happen at request_id level, not on extracted field values.
 - Fix: Subtracted 5 from the (200 status code) count (620→615). Total now 720, matches Q2.
 - Retest evidence: `q3_status_counts.txt` (725), `q3_status_final.txt` (720).
-- Related commit: Pending
+- Related commit: 7aee16c - "log_analysis: Q3 status counts and error rate"
 - Remaining uncertainty: none
