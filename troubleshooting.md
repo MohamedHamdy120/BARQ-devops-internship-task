@@ -37,11 +37,11 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Command or test: Grouped all lines by request_id; for each request_id appearing more than once, compared the set of unique line values. Ran against application.log (script: q2 retry-check, see log_analysis.md Q2 commands).
 - Actual output: 47 request_ids appeared with differing content. Every one of the 47 groups contained exactly two lines: one `"event": "dependency_error"` line and one `"event": "http_request"` line, both sharing the same request_id and near-identical timestamps (~1ms apart).
 - Failed attempt and what changed your thinking: Initially treated all 47 as evidence of 47 retried requests. Inspecting the actual printed line pairs showed each group was one error-detail line plus one response-summary line for a single request, not two separate `http_request` attempts — the app logs an extra diagnostic line whenever a dependency call fails, but only sends one HTTP response per request. This meant "differing content under the same request_id" does not by itself imply a retry.
-- Root cause: application.log records two log lines per failed request (dependency_error + http_request) by design, not two client attempts. No genuine retries (two `http_request` entries for the same request_id) exist in either access.log or application.log.
+- Root cause: application.log records two lines per failed request (dependency_error + http_request) by design, not two client attempts. No request_id appears twice as an `http_request`, so no line is double-counted. (NGINX upstream retries are a separate thing, see Q6.)
 - Fix: N/A — not a bug. Documented the correct dedup rule: count only `event: "http_request"` lines when counting distinct requests in application.log; a request_id repeated with an accompanying dependency_error line is still one request.
 - Retest evidence: `analysis/q2_retry_check_application.txt` (all 47 groups reviewed), `analysis/q2_distinct_counts.txt` (682 distinct requests via http_request count).
 - Related commit: 18edb87 - "log_analysis: Q2 distinct requests & retry check; troubleshooting: retry misclassification entry"
-- Remaining uncertainty: Logs show no retries in this window; doesn't prove no retry mechanism exists in app/NGINX config.
+- Remaining uncertainty: Corrected in Q6: 19 upstream retries exist in access.log (multi-address `upstream` field), all ending in 200. My Q2 check only looked for repeated log lines, so it missed them.
 
 
 ## Status count deduplication (analysis Q3) / 2026-09-21 / 4:30 pm

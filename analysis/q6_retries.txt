@@ -1,0 +1,7 @@
+requests checked: 720 | with multiple upstreams: 19
+{'timestamp': '2026-08-20T11:05:07.620Z', 'request_id': 'lab-000124', 'method': 'GET', 'path': '/ready', 'status': 200, 'upstream': '172.23.0.12:8080, 172.23.0.11:8080', 'upstream_status': '502, 200', 'request_time': 0.12, 'client': '192.0.2.24'}
+{'timestamp': '2026-08-20T11:05:22.620Z', 'request_id': 'lab-000130', 'method': 'GET', 'path': '/instance', 'status': 200, 'upstream': '172.23.0.12:8080, 172.23.0.11:8080', 'upstream_status': '502, 200', 'request_time': 0.12, 'client': '192.0.2.24'}
+{'timestamp': '2026-08-20T11:05:37.620Z', 'request_id': 'lab-000136', 'method': 'GET', 'path': '/ready', 'status': 200, 'upstream': '172.23.0.12:8080, 172.23.0.11:8080', 'upstream_status': '502, 200', 'request_time': 0.12, 'client': '192.0.2.24'}
+{'timestamp': '2026-08-20T11:05:52.620Z', 'request_id': 'lab-000142', 'method': 'GET', 'path': '/instance', 'status': 200, 'upstream': '172.23.0.12:8080, 172.23.0.11:8080', 'upstream_status': '502, 200', 'request_time': 0.12, 'client': '192.0.2.24'}
+{'timestamp': '2026-08-20T11:06:07.620Z', 'request_id': 'lab-000148', 'method': 'GET', 'path': '/ready', 'status': 200, 'upstream': '172.23.0.12:8080, 172.23.0.11:8080', 'upstream_status': '502, 200', 'request_time': 0.12, 'client': '192.0.2.24'}
+final status of retried: Counter({200: 19})

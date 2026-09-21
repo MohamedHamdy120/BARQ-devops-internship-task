@@ -232,6 +232,45 @@ for s in sorted(d):
     v=sorted(d[s]); print(s,'n=',len(v),'median=%.0f ms'%(v[len(v)//2]*1000),'max=%.0f ms'%(v[-1]*1000))
 EOF
 ```
+### Q6 commands
+Requests with multiple upstreams (retried)
+```bash
+python3 - <<'EOF' | tee analysis/q6_retries.txt
+import json
+seen=set(); n=0; rows=[]
+for l in open('logs/access.log'):
+    if l in seen: continue
+    seen.add(l)
+    try: o=json.loads(l)
+    except: continue
+    n+=1
+    if ',' in str(o['upstream']) or ',' in str(o['upstream_status']):
+        rows.append(o)
+print('requests checked:',n,'| with multiple upstreams:',len(rows))
+for o in rows[:5]: print(o)
+from collections import Counter
+print('final status of retried:',Counter(o['status'] for o in rows))
+EOF
+```
+
+retried requests by path, minute, upstream pair and latency
+```bash
+python3 - <<'EOF' | tee analysis/q6_breakdown.txt
+import json
+from collections import Counter
+seen=set(); rows=[]
+for l in open('logs/access.log'):
+    if l in seen: continue
+    seen.add(l)
+    try: o=json.loads(l)
+    except: continue
+    if ',' in str(o['upstream']): rows.append(o)
+print('BY PATH ',Counter(o['path'] for o in rows))
+print('BY MIN  ',sorted(Counter(o['timestamp'][:16] for o in rows).items()))
+print('BY PAIR ',Counter((o['upstream'],o['upstream_status']) for o in rows))
+print('LATENCY ',Counter(o['request_time'] for o in rows))
+EOF
+```
 
 ## Results
 ### Q1 — Interval, valid/malformed/duplicate lines
@@ -263,7 +302,7 @@ access.log: 720 distinct requests (726 lines − 1 malformed − 5 exact-duplica
 
 application.log: 682 distinct requests, counted via event: "http_request" lines — since a failed request logs two lines (a dependency_error line plus an http_request line), and only the http_request line represents an actual client response.
 
-Retries: checked all request_ids appearing more than once for differing field values. All 47 differing groups were error+response pairs for a single request, not repeated attempts. No genuine retries found in either log.
+Retries: no request_id appears twice as an `http_request`, so no log line is double-counted. Upstream retries are counted separately in Q6 via the `upstream` field.
 
 Evidence: `analysis/q2_distinct_counts.txt`, `analysis/q2_retry_check_access.txt`, `analysis/q2_retry_check_application.txt`.
 
@@ -322,6 +361,20 @@ Field: `request_time` from access.log (seconds, ms resolution; time the client w
 - Open question: the PostgreSQL `InvalidPassword` 503s likely share the ~2 s latency, but this was not checked per request_id. A rejected password should fail fast, so a fixed delay or retry may exist in the app. Check in Part 2.
 
 Evidence: `analysis/q5_latency.txt`, `analysis/q5_by_status.txt`
+
+### Q6 — Upstream retries
+
+An NGINX upstream retry appears as two addresses in `upstream` and two statuses in `upstream_status` on a single request_id. Deduped access.log, 720 requests checked.
+
+- **19 requests (2.6%) retried upstream. All 19 succeeded (final status 200).**
+- Every retry is the same: first attempt `172.23.0.12:8080` returned 502, second attempt `172.23.0.11:8080` returned 200.
+- All fall in 11:05-11:09 (4/4/4/4/3 per minute), the same window as the 40 client-visible 502s, on `/ready` (10) and `/instance` (9) only.
+- Each retried request took 120 ms, against a 55 ms median for successful requests, so a retry adds roughly 65 ms.
+- No request shows two upstreams with a failing final status, so 0 requests failed after retrying.
+- The 40 unretried 502s (on `/`, `/health`, `/records`, `/counter`) have a single upstream `.12`. NGINX did not retry them. Not proven why yet.
+- The retries hid errors from clients: 40 were visible, so 59 requests hit a 502 from `.12` in this window.
+
+Evidence: `analysis/q6_retries.txt`, `analysis/q6_breakdown.txt`
 
 ## Timeline and correlated examples
 ## Conclusions and limits
