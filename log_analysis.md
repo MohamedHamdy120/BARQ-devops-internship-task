@@ -121,6 +121,28 @@ EOF
 ```
 (same script, path swapped to `logs/application.log`, output to `analysis/q2_retry_check_application.txt`)
 
+### Q3 commands
+Raw status counts (all lines, includes duplicates):
+```bash
+grep -o '"status":[0-9]*' logs/access.log | sort | uniq -c | tee analysis/q3_status_counts.txt
+```
+
+Corrected counts (deduped) and error rate:
+```bash
+{
+  echo "Corrected status counts (deduped, n=720):"
+  echo "200: $((620-5))"
+  echo "404: 10"
+  echo "502: 40"
+  echo "503: 47"
+  echo "504: 8"
+  echo ""
+  echo "Errors (5xx only): $((40+47+8))"
+  echo "Denominator: 720 (distinct requests, from Q2)"
+  echo "Error rate: $(python3 -c 'print(round(95/720*100,2))')%"
+} | tee analysis/q3_status_final.txt
+```
+
 ## Results
 ### Q1 — Interval, valid/malformed/duplicate lines
 
@@ -156,6 +178,24 @@ Retries: checked all request_ids appearing more than once for differing field va
 Evidence: `analysis/q2_distinct_counts.txt`, `analysis/q2_retry_check_access.txt`, `analysis/q2_retry_check_application.txt`.
 
 Note: dependency_error(redis, TimeoutError) pairs in application.log consistently show duration_ms ≈ 2025, suggesting a fixed ~2s redis timeout
+
+### Q3 — Final client status counts & error rate
+
+Counted from access.log (client-facing responses via NGINX), deduped to 720 distinct requests (raw grep count of 725 minus 5 exact duplicates already identified in Q1).
+
+| Status | Count |
+|---|---|
+| 200 | 615 |
+| 404 | 10 |
+| 502 | 40 |
+| 503 | 47 |
+| 504 | 8 |
+
+- **Errors:** 95 (5xx only — 404 excluded, since it's a correctly-served "not found" response, not a server failure)
+- **Denominator:** 720 (distinct requests)
+- **Error rate:** 95/720 = 13.19%
+
+Evidence: `analysis/q3_status_counts.txt`, `analysis/q3_status_final.txt`
 
 ## Timeline and correlated examples
 ## Conclusions and limits

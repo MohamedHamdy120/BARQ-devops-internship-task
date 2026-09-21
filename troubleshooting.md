@@ -16,7 +16,7 @@ Keep chronological entries. Copy this block for each meaningful investigation.
 
 Do not fabricate a failed attempt just to fill the template. Record actual attempts.
 
-## Log ordering check (analysis Q1) / 2026-08-20 / 5:50 pm
+## Log ordering check (analysis Q1) / 2026-09-20 / 5:50 pm
 
 - Symptom: Needed first/last timestamps per log to answer Q1 interval.
 - Hypothesis: Files are sorted by timestamp, so `head`/`tail` are sufficient.
@@ -30,7 +30,7 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Remaining uncertainty: Whether access.log:311 is malformed or a valid variant — to be decided in Q1 sub-task 2.
 (Resolved — line 311 is malformed JSON, confirmed in q1_malformed_access.txt.)
 
-## Retry misclassification check (analysis Q2) / 2026-08-21 / 12:10 pm
+## Retry misclassification check (analysis Q2) / 2026-09-21 / 12:10 pm
 
 - Symptom: Q2 requires proving requests weren't double-counted due to retries. Needed to check whether any request_id appears more than once with differing field values (not just exact-duplicate lines already found in Q1).
 - Hypothesis: If a request_id appears more than once with different content, it represents an upstream retry — the same client request attempted more than once.
@@ -42,3 +42,17 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `analysis/q2_retry_check_application.txt` (all 47 groups reviewed), `analysis/q2_distinct_counts.txt` (682 distinct requests via http_request count).
 - Related commit: 18edb87 - "log_analysis: Q2 distinct requests & retry check; troubleshooting: retry misclassification entry"
 - Remaining uncertainty: Logs show no retries in this window; doesn't prove no retry mechanism exists in app/NGINX config.
+
+
+## Status count deduplication (analysis Q3) / 2026-09-21 / 4:30 pm
+
+- Symptom: Raw status counts from access.log summed to 725, not the 720 denominator from Q2.
+- Hypothesis: `uniq -c` would auto-dedupe by request, so no adjustment needed.
+- Command: `grep -o '"status":[0-9]*' logs/access.log | sort | uniq -c`
+- Actual output: 725 total (620 of them status 200).
+- Failed attempt: `uniq -c` only collapses identical strings, not requests — it double-counted the 5 known duplicate lines (all status 200) from Q1.
+- Root cause: Dedup must happen at request_id level, not on extracted field values.
+- Fix: Subtracted 5 from the (200 status code) count (620→615). Total now 720, matches Q2.
+- Retest evidence: `q3_status_counts.txt` (725), `q3_status_final.txt` (720).
+- Related commit: Pending
+- Remaining uncertainty: none

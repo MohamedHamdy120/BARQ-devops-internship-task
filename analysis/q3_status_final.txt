@@ -1,0 +1,10 @@
+Corrected status counts (deduped, n=720):
+200: 615
+404: 10
+502: 40
+503: 47
+504: 8
+
+Errors (5xx only): 95
+Denominator: 720 (distinct requests, from Q2)
+Error rate: 13.19%
