@@ -1,0 +1,144 @@
+lab-000292 2
+    {"timestamp": "2026-08-20T11:12:09.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000292", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:12:09.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000292", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000293 2
+    {"timestamp": "2026-08-20T11:12:12.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000293", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:12:12.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000293", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000296 2
+    {"timestamp": "2026-08-20T11:12:19.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000296", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:12:19.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000296", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000297 2
+    {"timestamp": "2026-08-20T11:12:22.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000297", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:12:22.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000297", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000304 2
+    {"timestamp": "2026-08-20T11:12:39.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000304", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:12:39.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000304", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000305 2
+    {"timestamp": "2026-08-20T11:12:42.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000305", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:12:42.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000305", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000308 2
+    {"timestamp": "2026-08-20T11:12:49.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000308", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:12:49.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000308", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000309 2
+    {"timestamp": "2026-08-20T11:12:52.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000309", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:12:52.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000309", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000316 2
+    {"timestamp": "2026-08-20T11:13:09.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000316", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:13:09.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000316", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000320 2
+    {"timestamp": "2026-08-20T11:13:19.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000320", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:13:19.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000320", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000321 2
+    {"timestamp": "2026-08-20T11:13:22.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000321", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:13:22.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000321", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000328 2
+    {"timestamp": "2026-08-20T11:13:39.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000328", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:13:39.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000328", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000329 2
+    {"timestamp": "2026-08-20T11:13:42.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000329", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:13:42.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000329", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000332 2
+    {"timestamp": "2026-08-20T11:13:49.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000332", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:13:49.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000332", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000333 2
+    {"timestamp": "2026-08-20T11:13:52.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000333", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:13:52.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000333", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000340 2
+    {"timestamp": "2026-08-20T11:14:09.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000340", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:14:09.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000340", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000341 2
+    {"timestamp": "2026-08-20T11:14:12.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000341", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:14:12.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000341", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000344 2
+    {"timestamp": "2026-08-20T11:14:19.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000344", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:14:19.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000344", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000345 2
+    {"timestamp": "2026-08-20T11:14:22.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000345", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:14:22.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000345", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000352 2
+    {"timestamp": "2026-08-20T11:14:39.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000352", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:14:39.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000352", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000353 2
+    {"timestamp": "2026-08-20T11:14:42.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000353", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:14:42.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000353", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000356 2
+    {"timestamp": "2026-08-20T11:14:49.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000356", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:14:49.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000356", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000357 2
+    {"timestamp": "2026-08-20T11:14:52.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000357", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:14:52.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000357", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000364 2
+    {"timestamp": "2026-08-20T11:15:09.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000364", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:15:09.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000364", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000365 2
+    {"timestamp": "2026-08-20T11:15:12.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000365", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:15:12.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000365", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000368 2
+    {"timestamp": "2026-08-20T11:15:19.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000368", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:15:19.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000368", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000369 2
+    {"timestamp": "2026-08-20T11:15:22.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000369", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:15:22.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000369", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000376 2
+    {"timestamp": "2026-08-20T11:15:39.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000376", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:15:39.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000376", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+lab-000377 2
+    {"timestamp": "2026-08-20T11:15:42.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000377", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:15:42.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000377", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000380 2
+    {"timestamp": "2026-08-20T11:15:49.524Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000380", "instance_id": "app-02", "dependency": "redis", "error_type": "TimeoutError"}
+    {"timestamp": "2026-08-20T11:15:49.525Z", "level": "WARN", "event": "http_request", "request_id": "lab-000380", "instance_id": "app-02", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+lab-000381 2
+    {"timestamp": "2026-08-20T11:15:52.025Z", "level": "WARN", "event": "http_request", "request_id": "lab-000381", "instance_id": "app-01", "method": "GET", "path": "/counter", "status": 503, "duration_ms": 2025.0}
+    {"timestamp": "2026-08-20T11:15:52.024Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000381", "instance_id": "app-01", "dependency": "redis", "error_type": "TimeoutError"}
+lab-000484 2
+    {"timestamp": "2026-08-20T11:20:07.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000484", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+    {"timestamp": "2026-08-20T11:20:07.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000484", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+lab-000485 2
+    {"timestamp": "2026-08-20T11:20:10.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000485", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:20:10.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000485", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000486 2
+    {"timestamp": "2026-08-20T11:20:12.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000486", "instance_id": "app-02", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:20:12.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000486", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000487 2
+    {"timestamp": "2026-08-20T11:20:15.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000487", "instance_id": "app-01", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:20:15.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000487", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000496 2
+    {"timestamp": "2026-08-20T11:20:37.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000496", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:20:37.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000496", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000497 2
+    {"timestamp": "2026-08-20T11:20:40.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000497", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:20:40.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000497", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000498 2
+    {"timestamp": "2026-08-20T11:20:42.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000498", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+    {"timestamp": "2026-08-20T11:20:42.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000498", "instance_id": "app-02", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+lab-000499 2
+    {"timestamp": "2026-08-20T11:20:45.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000499", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+    {"timestamp": "2026-08-20T11:20:45.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000499", "instance_id": "app-01", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+lab-000508 2
+    {"timestamp": "2026-08-20T11:21:07.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000508", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:21:07.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000508", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000509 2
+    {"timestamp": "2026-08-20T11:21:10.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000509", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:21:10.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000509", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000510 2
+    {"timestamp": "2026-08-20T11:21:12.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000510", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+    {"timestamp": "2026-08-20T11:21:12.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000510", "instance_id": "app-02", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+lab-000511 2
+    {"timestamp": "2026-08-20T11:21:15.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000511", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+    {"timestamp": "2026-08-20T11:21:15.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000511", "instance_id": "app-01", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+lab-000520 2
+    {"timestamp": "2026-08-20T11:21:37.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000520", "instance_id": "app-02", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:21:37.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000520", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000521 2
+    {"timestamp": "2026-08-20T11:21:40.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000521", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+    {"timestamp": "2026-08-20T11:21:40.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000521", "instance_id": "app-01", "method": "GET", "path": "/ready", "status": 503, "duration_ms": 41.0}
+lab-000522 2
+    {"timestamp": "2026-08-20T11:21:42.541Z", "level": "WARN", "event": "http_request", "request_id": "lab-000522", "instance_id": "app-02", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+    {"timestamp": "2026-08-20T11:21:42.540Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000522", "instance_id": "app-02", "dependency": "postgres", "error_type": "InvalidPassword"}
+lab-000523 2
+    {"timestamp": "2026-08-20T11:21:45.040Z", "level": "ERROR", "event": "dependency_error", "request_id": "lab-000523", "instance_id": "app-01", "dependency": "postgres", "error_type": "InvalidPassword"}
+    {"timestamp": "2026-08-20T11:21:45.041Z", "level": "WARN", "event": "http_request", "request_id": "lab-000523", "instance_id": "app-01", "method": "GET", "path": "/records", "status": 503, "duration_ms": 41.0}
+---
+exact-duplicate request_ids: 2
+differing request_ids (candidates for retry/bug): 47

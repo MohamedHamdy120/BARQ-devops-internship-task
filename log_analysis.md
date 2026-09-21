@@ -45,7 +45,7 @@ print('malformed:',len(bad))
 for b in bad: print(b)
 EOF
 ```
-(same pattern for `application.log`)
+(same script, path swapped to `logs/application.log`, output to `analysis/q1_malformed_app.txt`)
 
 Malformed lines for error.log file:
 ```
@@ -70,6 +70,56 @@ done | tee analysis/q1_duplicate_lines.txt
 
 Valid = Total − Malformed − Excess duplicates (derived; see table below).
 
+### Q2 commands
+Distinct requests count:
+```bash
+{
+  echo "access.log distinct requests: $((726 - 1 - 5))"
+  echo "application.log distinct requests (event=http_request):"
+  grep -c '"event": "http_request"' logs/application.log
+} | tee analysis/q2_distinct_counts.txt
+```
+
+Retry check — group by request_id, flag groups where lines differ (not exact duplicates):
+```bash
+python3 - <<'EOF' | tee analysis/q2_retry_check_access.txt
+import json
+from collections import defaultdict
+
+by_id = defaultdict(list)
+with open('logs/access.log') as f:
+    for line in f:
+        line = line.rstrip()
+        if not line:
+            continue
+        try:
+            obj = json.loads(line)
+        except Exception:
+            continue
+        rid = obj.get('request_id')
+        if rid is None:
+            continue
+        by_id[rid].append(line)
+
+exact_dup_ids = 0
+differing_ids = 0
+for rid, lines in by_id.items():
+    if len(lines) > 1:
+        unique_lines = set(lines)
+        if len(unique_lines) == 1:
+            exact_dup_ids += 1
+        else:
+            differing_ids += 1
+            print(rid, len(lines))
+            for l in unique_lines:
+                print('   ', l)
+
+print('---')
+print('exact-duplicate request_ids:', exact_dup_ids)
+print('differing request_ids (candidates for retry/bug):', differing_ids)
+EOF
+```
+(same script, path swapped to `logs/application.log`, output to `analysis/q2_retry_check_application.txt`)
 
 ## Results
 ### Q1 — Interval, valid/malformed/duplicate lines
@@ -95,5 +145,17 @@ Valid (unique) = well-formed, appears once; Malformed = parse/field failure; Dup
 Evidence: `analysis/q1_interval.txt`, `analysis/q1_malformed_*.txt`, `analysis/q1_duplicate_lines*.txt`.
 
 Notes: logs not sorted; error.log ends with a `[notice]`, not an error.
+
+### Q2 — Distinct requests & deduplication
+access.log: 720 distinct requests (726 lines − 1 malformed − 5 exact-duplicate lines). See Q1 for refercnce
+
+application.log: 682 distinct requests, counted via event: "http_request" lines — since a failed request logs two lines (a dependency_error line plus an http_request line), and only the http_request line represents an actual client response.
+
+Retries: checked all request_ids appearing more than once for differing field values. All 47 differing groups were error+response pairs for a single request, not repeated attempts. No genuine retries found in either log.
+
+Evidence: `analysis/q2_distinct_counts.txt`, `analysis/q2_retry_check_access.txt`, `analysis/q2_retry_check_application.txt`.
+
+Note: dependency_error(redis, TimeoutError) pairs in application.log consistently show duration_ms ≈ 2025, suggesting a fixed ~2s redis timeout
+
 ## Timeline and correlated examples
 ## Conclusions and limits

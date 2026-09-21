@@ -1,0 +1,3 @@
+access.log distinct requests: 720
+application.log distinct requests (event=http_request):
+682
