@@ -436,5 +436,25 @@ No application.log line, because NGINX never established a TCP connection to .12
 
 Evidence: `analysis/q8_correlated.txt`
 
+### Q9 — Proxy/connectivity vs dependency/application errors
+
+**Proxy/connectivity (NGINX ↔ backend, never reaches app logic):**
+
+| Type | Evidence |
+|---|---|
+| 502, 11:05-09 (40) | error.log: `connect() failed (111: Connection refused)` to 172.23.0.12:8080. No application.log line for any of these request_ids (Q8). request_time = 3ms — failed before any work could happen. |
+| 504, 11:25-26 (8) | error.log: `upstream timed out (110)` reading response header, both backends, `/records` only. No application.log line either. |
+
+**Dependency/application (request reaches the app, which then fails on its own dependency):**
+
+| Type | Evidence |
+|---|---|
+| 503, 11:12-15 (31) | application.log: `dependency_error`, `redis`, `TimeoutError`. No error.log line — NGINX received a normal HTTP 503 response, so it never logged a proxy error. |
+| 503, 11:20-21 (16) | application.log: `dependency_error`, `postgres`, `InvalidPassword`. Same pattern: app returned 503 itself, no error.log entry. |
+
+**The proof, stated plainly:** proxy/connectivity failures appear in error.log and are absent from application.log, because NGINX never reached the app. Dependency/application failures are the reverse: present in application.log, absent from error.log, because the app responded normally from NGINX's point of view — it just reported failure in its own body/status. Confirmed on individual requests in Q8.
+
+Evidence: `analysis/q4_dependency.txt`, `analysis/q7_error_window.txt`, `analysis/q8_correlated.txt`
+
 ## Timeline and correlated examples
 ## Conclusions and limits
