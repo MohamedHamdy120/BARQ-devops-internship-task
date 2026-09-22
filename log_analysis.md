@@ -277,6 +277,21 @@ error.log entries in incident windows
 ```bash
 grep -E '11:0[5-9]|11:1[0-5]|11:2[0-6]' logs/error.log | tee analysis/q7_error_window.txt
 ```
+### Q8 commands
+correlate one failed and one successful request_id across all three logs
+```bash
+{
+echo "=== FAILED: lab-000122 ==="
+grep '"request_id": *"lab-000122"' logs/access.log
+grep 'request_id=lab-000122' logs/error.log
+grep '"request_id": *"lab-000122"' logs/application.log
+echo "=== SUCCESS: lab-000002 ==="
+grep '"request_id": *"lab-000002"' logs/access.log
+grep 'request_id=lab-000002' logs/error.log
+grep '"request_id": *"lab-000002"' logs/application.log
+} | tee analysis/q8_correlated.txt
+```
+
 
 ## Results
 ### Q1 — Interval, valid/malformed/duplicate lines
@@ -398,6 +413,28 @@ Evidence: `analysis/q6_retries.txt`, `analysis/q6_breakdown.txt`
 Sequence: .12 down (connection-level) → recovers by 11:12 → Redis times out → recovers by 11:20 → PostgreSQL rejects credentials → recovers by 11:25 → PostgreSQL/records hangs on both backends → recovers after 11:26.
 
 Evidence: `analysis/q7_error_window.txt`, `analysis/q4_dependency.txt`, `analysis/q6_breakdown.txt`
+
+### Q8 — Correlated failed and successful requests
+
+**Failed: lab-000122**
+
+| Log | Line |
+|---|---|
+| access.log | 11:05:02.503Z, GET /health, upstream 172.23.0.12:8080, status 502, upstream_status 502, request_time 0.003s |
+| error.log | 11:05:02, connect() failed (111: Connection refused) to 172.23.0.12:8080/health |
+| application.log | no entry |
+
+No application.log line, because NGINX never established a TCP connection to .12 — the request never reached the app. This matches Q7: the 11:05-09 burst is connection-level, not app-level.
+
+**Successful: lab-000002**
+
+| Log | Line |
+|---|---|
+| access.log | 11:00:02.532Z, GET /health, upstream 172.23.0.12:8080, status 200, request_time 0.032s |
+| application.log | 11:00:02.532Z, event http_request, instance_id app-02, status 200, duration_ms 32.0 |
+| error.log | no entry |
+
+Evidence: `analysis/q8_correlated.txt`
 
 ## Timeline and correlated examples
 ## Conclusions and limits
