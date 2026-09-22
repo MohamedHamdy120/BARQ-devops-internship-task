@@ -83,7 +83,7 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Related commit: none (investigation only)
 - Remaining uncertainty: whether nginx.conf should change to `listen 81;` or docker-compose.yml should map to `:80`; whether other healthcheck/port issues exist further down the file (not yet fully reviewed).
 
-## Healthcheck path fix (Part 2) / 2026-09-22 / HH:MM
+## Healthcheck path fix (Part 2) / 2026-09-22 / 2:00 pm 
 
 - Symptom: app-01, app-02 stuck "Up (unhealthy)".
 - Hypothesis: healthcheck hitting wrong path.
