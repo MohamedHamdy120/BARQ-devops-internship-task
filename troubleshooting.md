@@ -159,3 +159,16 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `/ready` returned `{"postgres":"ready","redis":"ready"}`; `/records` returned actual data instead of an error.
 - Related commit: 08b21ab - "fix: correct postgres port 5433->5432, redis port 6380->6379, password mismatch in config/app.env"
 - Remaining uncertainty: whether storing the password directly in `config/app.env` (committed to git) is acceptable for this exercise — flagged for decisions.md/security_review.md.
+
+## Instance identity mismatch (Part 2) / 2026-09-22 / 8:45 pm
+
+- Symptom: `/instance` returned `app-01` on every request in a 6-request loop through NGINX — looked like NGINX wasn't load-balancing between backends.
+- Hypothesis: NGINX upstream config was misconfigured (e.g. `ip_hash` pinning, or app-02 missing from the pool), causing all traffic to route to one backend.
+- Command or test: Inspected `nginx.conf` — `upstream application_pool` correctly lists both `app-01:8080` and `app-02:8080`, no `ip_hash`. Bypassed NGINX entirely: `docker exec nginx wget -qO- http://app-02:8080/` — hit app-02 directly.
+- Actual output: Direct request to `app-02:8080` returned `"instance_id":"app-01"`.
+- Failed attempt and what changed your thinking: Initially suspected NGINX routing/config. Config was clean, and reaching app-02 directly still returned "app-01" — proved the bug was inside app-02's own identity, not NGINX's routing at all.
+- Root cause: `docker-compose.yml`'s `app-02` service had a copy-pasted `INSTANCE_ID: "app-01"` override in its `environment:` block, so both containers reported themselves as app-01 regardless of which one actually served the request.
+- Fix: Changed `app-02`'s `INSTANCE_ID` override to `"app-02"` in docker-compose.yml, then `docker compose up -d` to recreate the container with the corrected environment (verified via `docker exec app-02 env | grep -i instance`, since compose's "Started" log line didn't confirm recreation on its own).
+- Retest evidence: 6-request loop to `/instance` now alternates cleanly: app-02, app-01, app-02, app-01, app-02, app-01.
+- Related commit: 9099880 - "fix: correct app-02 INSTANCE_ID value (was app-01)"
+- Remaining uncertainty: none
