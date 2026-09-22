@@ -146,3 +146,16 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `docker compose ps -a` shows postgres/redis with no host-port arrow (`5432/tcp`, `6379/tcp` only); `curl 127.0.0.1:15432` returns connection refused; `docker port postgres`/`docker port redis` print nothing.
 - Related commit: 3aa0d8c - "fix: remove published PostgreSQL/Redis host ports (15432, 16379) per brief"
 - Remaining uncertainty: none.
+
+## Database/Redis connection config mismatch (Part 2) / 2026-09-22 / 6:50 pm
+
+- Symptom: `/records` returned `{"error":"postgres_unavailable"}`; `/ready` showed both postgres and redis as "unavailable", even though `docker compose ps -a` showed both containers healthy.
+- Hypothesis: app's connection strings don't match the actual service config.
+- Command or test: `docker compose exec app-01 env | grep -i postgres\|redis`, then traced `DATABASE_URL`/`REDIS_URL` to `config/app.env` (via `env_file:` in the `x-app` anchor in docker-compose.yml, not the environment: block directly).
+- Actual output: `DATABASE_URL` used port `5433`; actual postgres port is `5432` (default, confirmed via `pg_isready` healthcheck and no `PGPORT` override). `REDIS_URL` used port `6380`; actual redis port is `6379` (confirmed via `redis-cli config get port`). Additionally, the password in `config/app.env`'s `DATABASE_URL` differed by one character from `POSTGRES_PASSWORD` in docker-compose.yml.
+- Failed attempt and what changed your thinking: initially checked docker-compose.yml's `environment:` block for `DATABASE_URL`/`REDIS_URL` and found nothing, which looked like a dead end. Checking the running container's actual env (`docker compose exec app-01 env`) showed the values were present, which led to finding `env_file: ./config/app.env` as the real source.
+- Root cause: three independent value mismatches in `config/app.env`: wrong postgres port, wrong redis port, wrong password.
+- Fix: corrected both ports via sed; password corrected manually (single-character diff) to match `docker-compose.yml`.
+- Retest evidence: `/ready` returned `{"postgres":"ready","redis":"ready"}`; `/records` returned actual data instead of an error.
+- Related commit: 08b21ab - "fix: correct postgres port 5433->5432, redis port 6380->6379, password mismatch in config/app.env"
+- Remaining uncertainty: whether storing the password directly in `config/app.env` (committed to git) is acceptable for this exercise — flagged for decisions.md/security_review.md.
