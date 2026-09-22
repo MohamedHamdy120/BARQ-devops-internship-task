@@ -94,3 +94,42 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `docker compose ps -a` — both app-01, app-02 now "healthy".
 - Related commit: 91a1f5d - "fix: healthcheck path /healthz -> /health (app-01, app-02 now healthy)"
 - Remaining uncertainty: none for this issue.
+
+## NGINX host port mismatch (Part 2) / 2026-09-22 / 2:35 pm
+
+- Symptom: `curl http://127.0.0.1:8080/` failed to connect; `docker compose ps -a` showed nginx port mapping as `127.0.0.1:8080->81/tcp`.
+- Hypothesis: docker-compose.yml and nginx.conf disagree on which container port nginx listens on.
+- Command or test: `grep -n "listen" nginx/nginx.conf` vs `sed -n '60,65p' docker-compose.yml`.
+- Actual output: nginx.conf has `listen 80;`; docker-compose.yml mapped host 8080 to container port `81`, which nothing listens on.
+- Failed attempt and what changed your thinking: none — first check confirmed the mismatch directly.
+- Root cause: docker-compose.yml line 63 mapped `:81` instead of `:80`.
+- Fix: `sed -i 's|:${PUBLIC_PORT:-8080}:81|:${PUBLIC_PORT:-8080}:80|' docker-compose.yml`
+- Retest evidence: `docker compose ps -a` showed `127.0.0.1:8080->80/tcp`; curl still returned 502 (next issue), but port now connects instead of refusing.
+- Related commit: b34e935 - "fix: nginx port 81->80, app-01 nginx upstream port 8081->8080, APP_HOST 127.0.0.1->0.0.0.0"
+- Remaining uncertainty: none for this issue.
+
+## NGINX upstream port to app-01 (Part 2) / 2026-09-22 / 3:00 pm
+
+- Symptom: after fixing the host port, `curl http://127.0.0.1:8080/` returned 502 Bad Gateway.
+- Hypothesis: nginx's upstream config points to a wrong app port.
+- Command or test: `cat nginx/nginx.conf`; checked `upstream application_pool` block.
+- Actual output: `server app-01:8081` — app-01 actually listens on 8080 (confirmed via `docker compose ps -a` and `APP_PORT: "8080"`).
+- Failed attempt and what changed your thinking: first `sed` edit appeared to apply, but `docker compose exec nginx cat /etc/nginx/nginx.conf` still showed the old `8081`, even though the file on disk (bind-mounted read-only) was correct. `up -d nginx` alone didn't reload it; `up -d --force-recreate nginx` did. This showed that editing a bind-mounted config file doesn't guarantee the running container sees it without a recreate/reload.
+- Root cause: nginx.conf line 10 had a typo, `app-01:8081` instead of `app-01:8080`.
+- Fix: `sed -i 's|server app-01:8081|server app-01:8080|' nginx/nginx.conf`, then `docker compose up -d --force-recreate nginx`.
+- Retest evidence: `docker compose exec nginx cat /etc/nginx/nginx.conf | grep "server app"` showed both on 8080; curl still 502 (next issue), but nginx error log changed from "wrong port" to "connection refused on correct port".
+- Related commit: b34e935 - "fix: nginx port 81->80, app-01 nginx upstream port 8081->8080, APP_HOST 127.0.0.1->0.0.0.0"
+- Remaining uncertainty: none for this issue; force-recreate needed for config reload noted as a process lesson.
+
+## App bind address (APP_HOST) (Part 2) / 2026-09-22 / 3:20 pm
+
+- Symptom: after fixing the nginx upstream port, curl still returned 502; nginx error log showed `connect() failed (111: Connection refused)` to `172.19.0.2:8080` (app-01's network IP), even though the port was correct.
+- Hypothesis: app-01 might only be listening on loopback (127.0.0.1), unreachable from other containers on the same network.
+- Command or test: `docker compose exec app-01 python -c "import socket; s=socket.socket(); print(s.connect_ex(('127.0.0.1',8080)))"` (returned 0 — reachable via loopback); `grep -rn "run(" app/` showed the app defaults to `host=os.getenv("APP_HOST","0.0.0.0")`; `docker compose exec app-01 env | grep APP_HOST` and `grep -n APP_HOST docker-compose.yml`.
+- Actual output: docker-compose.yml line 8 explicitly set `APP_HOST: "127.0.0.1"`, overriding the safe default and binding the app to loopback only.
+- Failed attempt and what changed your thinking: initially suspected a Docker networking issue (wrong network, firewall) since nginx and app-01 were confirmed on the same networks (`docker inspect`). Only checking the app's actual bind address (not just the port) revealed the real cause.
+- Root cause: docker-compose.yml explicitly overrode `APP_HOST` to `127.0.0.1`, making the app unreachable from any other container despite correct networking and ports.
+- Fix: `sed -i 's|APP_HOST: "127.0.0.1"|APP_HOST: "0.0.0.0"|' docker-compose.yml`, then `docker compose up -d --force-recreate app-01 app-02`.
+- Retest evidence: `curl http://127.0.0.1:8080/` and `/health` both returned valid JSON through nginx; all 5 containers reported healthy in `docker compose ps -a`.
+- Related commit: b34e935 - "fix: nginx port 81->80, app-01 nginx upstream port 8081->8080, APP_HOST 127.0.0.1->0.0.0.0"
+- Remaining uncertainty: none.
