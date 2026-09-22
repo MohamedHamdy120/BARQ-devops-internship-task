@@ -133,3 +133,16 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `curl http://127.0.0.1:8080/` and `/health` both returned valid JSON through nginx; all 5 containers reported healthy in `docker compose ps -a`.
 - Related commit: b34e935 - "fix: nginx port 81->80, app-01 nginx upstream port 8081->8080, APP_HOST 127.0.0.1->0.0.0.0"
 - Remaining uncertainty: none.
+
+## Published PostgreSQL/Redis ports (Part 2) / 2026-09-22 / 5:45 pm
+
+- Symptom: brief requires only NGINX published on host port 8080; docker-compose.yml also published PostgreSQL (15432) and Redis (16379) to the host.
+- Hypothesis: these lines are leftover from local dev/debugging and violate the brief's requirement directly.
+- Command or test: `grep -n "ports:" docker-compose.yml`.
+- Actual output: lines 26 and 41 mapped `127.0.0.1:15432:5432` and `127.0.0.1:16379:6379`.
+- Failed attempt and what changed your thinking: none — straightforward requirement check.
+- Root cause: unneeded host port mappings left in docker-compose.yml.
+- Fix: removed both `ports:` lines via sed; kept only nginx's.
+- Retest evidence: `docker compose ps -a` shows postgres/redis with no host-port arrow (`5432/tcp`, `6379/tcp` only); `curl 127.0.0.1:15432` returns connection refused; `docker port postgres`/`docker port redis` print nothing.
+- Related commit: 3aa0d8c - "fix: remove published PostgreSQL/Redis host ports (15432, 16379) per brief"
+- Remaining uncertainty: none.
