@@ -456,5 +456,15 @@ Evidence: `analysis/q8_correlated.txt`
 
 Evidence: `analysis/q4_dependency.txt`, `analysis/q7_error_window.txt`, `analysis/q8_correlated.txt`
 
+### Q10 — What the logs don't prove
+
+- **Why**, not just what: logs show .12 refused connections at 11:05-09 and both backends timed out on `/records` at 11:25-26, but not the underlying cause (crashed process, restart, bad query, resource exhaustion). Needs the live environment (Part 2) or container logs from that window, which aren't included.
+- **Why NGINX retried some paths and not others** (Q6): 19 of 40 502s were retried (`/ready`, `/instance`) and 40 were not (`/`, `/health`, `/records`, `/counter`). This depends on `nginx.conf` (`proxy_next_upstream` settings), not visible from the logs alone.
+- **Whether the ~2s latency on PostgreSQL `InvalidPassword` 503s (Q5) is a coincidence or a fixed delay/retry in app code** — not confirmed, would need app source or more granular internal timing.
+- **Whether request_time reflects real client experience** — it's NGINX's server-side timer only; no client-side network data exists in these logs.
+- **Whether this is a one-off or a recurring failure mode** — logs cover ~30 minutes; no basis to say if this recurs.
+
+Evidence: based on findings from Q4 (failure attribution), Q7 (timeline), Q8 (correlation) and Q9 (classification).
+
 ## Timeline and correlated examples
 ## Conclusions and limits
