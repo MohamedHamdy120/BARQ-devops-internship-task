@@ -272,6 +272,12 @@ print('LATENCY ',Counter(o['request_time'] for o in rows))
 EOF
 ```
 
+### Q7 commands
+error.log entries in incident windows
+```bash
+grep -E '11:0[5-9]|11:1[0-5]|11:2[0-6]' logs/error.log | tee analysis/q7_error_window.txt
+```
+
 ## Results
 ### Q1 — Interval, valid/malformed/duplicate lines
 
@@ -375,6 +381,23 @@ An NGINX upstream retry appears as two addresses in `upstream` and two statuses 
 - The retries hid errors from clients: 40 were visible, so 59 requests hit a 502 from `.12` in this window.
 
 Evidence: `analysis/q6_retries.txt`, `analysis/q6_breakdown.txt`
+
+### Q7 — Incident timeline
+
+| Time (UTC) | Source | Event |
+|---|---|---|
+| 11:05:02-11:09:57 | error.log | `172.23.0.12:8080` connection refused on every path, every 5s (40 events) |
+| 11:05:02-11:09:57 | access.log | 40 client 502s on .12; 19 retries to .11 succeed (Q6) |
+| 11:12:09-11:15 | application.log | Redis `TimeoutError`, 31 events, both backends |
+| 11:12-11:15 | access.log | 31 client 503s (app returns 503 itself; not in error.log) |
+| 11:20:xx-11:21 | application.log | PostgreSQL `InvalidPassword`, 16 events, both backends |
+| 11:20-11:21 | access.log | 16 client 503s (app returns 503 itself; not in error.log) |
+| 11:25:14-11:26:47 | error.log | upstream timeout reading header, `/records` only, alternating .12/.11 (8 events) |
+| 11:25-11:26 | access.log | 8 client 504s |
+
+Sequence: .12 down (connection-level) → recovers by 11:12 → Redis times out → recovers by 11:20 → PostgreSQL rejects credentials → recovers by 11:25 → PostgreSQL/records hangs on both backends → recovers after 11:26.
+
+Evidence: `analysis/q7_error_window.txt`, `analysis/q4_dependency.txt`, `analysis/q6_breakdown.txt`
 
 ## Timeline and correlated examples
 ## Conclusions and limits
