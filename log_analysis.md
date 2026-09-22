@@ -464,7 +464,7 @@ Evidence: `analysis/q4_dependency.txt`, `analysis/q7_error_window.txt`, `analysi
 - **Whether request_time reflects real client experience** — it's NGINX's server-side timer only; no client-side network data exists in these logs.
 - **Whether this is a one-off or a recurring failure mode** — logs cover ~30 minutes; no basis to say if this recurs.
 
-Evidence: based on findings from Q4 (failure attribution), Q7 (timeline), Q8 (correlation) and Q9 (classification).
+Evidence: based on findings from Q4 (failure attribution), Q7 (timeline), Q8 (correlation) and Q9 (classification)
 
 ## Timeline and correlated examples
 ## Conclusions and limits
