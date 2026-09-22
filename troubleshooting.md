@@ -82,3 +82,15 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: pending, will confirm after each fix (healthy status, working curl on 8080, no PostgreSQL/Redis ports reachable from host).
 - Related commit: none (investigation only)
 - Remaining uncertainty: whether nginx.conf should change to `listen 81;` or docker-compose.yml should map to `:80`; whether other healthcheck/port issues exist further down the file (not yet fully reviewed).
+
+## Healthcheck path fix (Part 2) / 2026-09-22 / HH:MM
+
+- Symptom: app-01, app-02 stuck "Up (unhealthy)".
+- Hypothesis: healthcheck hitting wrong path.
+- Command or test: `sed -n '9,13p' docker-compose.yml`
+- Actual output: healthcheck used `/healthz`; app has no such route (confirmed 404 in app-01 logs, see prior entry).
+- Root cause: hardcoded wrong path in docker-compose.yml line 12.
+- Fix: `sed -i "s|/healthz|/health|" docker-compose.yml`
+- Retest evidence: `docker compose ps -a` — both app-01, app-02 now "healthy".
+- Related commit: 91a1f5d - "fix: healthcheck path /healthz -> /health (app-01, app-02 now healthy)"
+- Remaining uncertainty: none for this issue.
