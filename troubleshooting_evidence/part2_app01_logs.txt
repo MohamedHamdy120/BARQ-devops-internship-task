@@ -1,0 +1,40 @@
+app-01  | {"timestamp": "2026-09-22T09:48:24.681+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "dbe7819df8e04db4851a6249954372c1", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.551}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:48:24] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:48:31.349+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "eff19c2e4de645c78ceaae773360131b", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.263}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:48:31] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:48:37.871+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "8f1e8cd4db414538b9dcf06adf2950a1", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.888}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:48:37] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:48:44.472+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "0edce72911184ec3972dbd64716b551d", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.602}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:48:44] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:48:51.448+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "77766daaeced42caaba9c7f755e25e39", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.292}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:48:51] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:48:57.864+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "e39ff3a78cc6494393c4503f68b7d807", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.366}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:48:57] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:04.512+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "e38120bc41954e859594c93a7b74122b", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.232}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:04] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:11] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:11.016+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "dad372bf89974df980044254cf55c08f", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.516}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:17] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:17.673+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "306d9a8f4ebf4250a1b033854e30b848", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.213}
+app-01  | {"timestamp": "2026-09-22T09:49:24.992+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "0bef2dabd7de423a9ba701282ae824e5", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.225}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:24] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:31.764+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "044fad7c2f814c15be70a9264c3862c6", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.807}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:31] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:38.497+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "1fa769a7f5ee43198810e1b2775d0a87", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.305}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:38] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:45.307+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "67dc99a4952f43e5b07f5314fedd58a1", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.22}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:45] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:51.802+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "904a6a8e957243698f3895b1f4d68ed0", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.279}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:51] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:49:58.343+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "84874910cd564e708ead73dc2ac16e1a", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.399}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:49:58] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:50:05.116+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "dcab5c2236334c5185829ea908e3409e", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.229}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:50:05] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:50:11] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:50:11.438+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "87ac00eedc814a15b4a19773d1f9592e", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.272}
+app-01  | {"timestamp": "2026-09-22T09:50:18.350+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "5bbe1970dc3d4cd0aa9416ff0c0309c5", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.532}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:50:18] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:50:24.846+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "73c05a6fcb904579aeda124ee0cf1d74", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.294}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:50:24] "[33mGET /healthz HTTP/1.1[0m" 404 -
+app-01  | {"timestamp": "2026-09-22T09:50:31.322+00:00", "level": "WARN", "service": "barq-api", "event": "http_request", "instance_id": "app-01", "request_id": "a2ee6684dd754cb781a515ce325078a9", "method": "GET", "path": "/healthz", "status": 404, "duration_ms": 0.571}
+app-01  | 127.0.0.1 - - [22/Sep/2026 09:50:31] "[33mGET /healthz HTTP/1.1[0m" 404 -

@@ -69,3 +69,16 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `analysis/q4_dependency.txt` total (47) equals the 503 count (47).
 - Related commit: f237245 - "log_analysis: Q4 failures; troubleshooting: attribution entry"
 - Remaining uncertainty: what error.log says about the 502 burst on .12 and the 504s
+
+## Part 2 initial investigation — compose/nginx port and healthcheck mismatches / 2026-09-22 / 1:10 pm
+
+- Symptom: `docker compose ps -a` showed app-01 and app-02 as "Up (unhealthy)"; nginx port mapping looked unusual (`127.0.0.1:8080->81/tcp`).
+- Hypothesis: healthcheck was hitting the wrong path, and/or the app process itself was crashing.
+- Command or test: `docker compose logs app-01`, `docker compose logs nginx`, `cat nginx/nginx.conf`, `grep -n -i "healthz\|healthcheck" Dockerfile docker-compose.yml`, `grep -n "8080\|ports:" docker-compose.yml`.
+- Actual output: app-01 logs showed the app responding normally, but every health probe was `GET /healthz` returning 404. docker-compose.yml line 12 hardcodes the healthcheck URL as `http://127.0.0.1:8080/healthz`. nginx.conf has `listen 80;` only, but docker-compose.yml line 63 maps `127.0.0.1:${PUBLIC_PORT:-8080}:81` — host 8080 to container port 81, which nothing listens on. Also found lines 26 and 41 publish PostgreSQL (`15432:5432`) and Redis (`16379:6379`) to the host, which the brief prohibits.
+- Failed attempt and what changed your thinking: initially suspected the app process itself was unhealthy (crashing or not starting). Logs showed the opposite — the app was up and responding correctly; the healthcheck was simply asking for a path (`/healthz`) that doesn't exist. Required endpoint per the brief is `/health`.
+- Root cause: three independent config bugs, not one — (1) healthcheck path typo, (2) nginx.conf/docker-compose.yml port disagreement (80 vs 81), (3) PostgreSQL and Redis ports published to host against the brief's requirement.
+- Fix: not yet applied — investigation only. To be fixed and committed one issue at a time.
+- Retest evidence: pending, will confirm after each fix (healthy status, working curl on 8080, no PostgreSQL/Redis ports reachable from host).
+- Related commit: none (investigation only)
+- Remaining uncertainty: whether nginx.conf should change to `listen 81;` or docker-compose.yml should map to `:80`; whether other healthcheck/port issues exist further down the file (not yet fully reviewed).
