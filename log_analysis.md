@@ -467,4 +467,14 @@ Evidence: `analysis/q4_dependency.txt`, `analysis/q7_error_window.txt`, `analysi
 Evidence: based on findings from Q4 (failure attribution), Q7 (timeline), Q8 (correlation) and Q9 (classification)
 
 ## Timeline and correlated examples
+See Q7 (timeline) and Q8 (correlated failed/successful requests) above.
 ## Conclusions and limits
+**What happened:** four sequential, non-overlapping incidents in a 22-minute window (11:05-11:26), each recovering before the next began:
+1. 11:05-09 — `172.23.0.12` refused connections (proxy-level, 40 client 502s, 19 masked by retry)
+2. 11:12-15 — Redis timeouts (app-level, 31 client 503s)
+3. 11:20-21 — PostgreSQL invalid password (app-level, 16 client 503s)
+4. 11:25-26 — both backends timed out on `/records` (proxy-level, 8 client 504s)
+
+**Overall impact:** 95 of 720 requests failed (13.2%), all within these four windows; outside them, 100% success at ~55ms median.
+
+**Limits (from Q10):** the logs prove *what* failed and *when*, not *why*. Root cause for .12's outage and the `/records` timeout needs the live environment. The retry-path pattern needs `nginx.conf`. The Postgres-503 latency coincidence is unconfirmed. All conclusions are scoped to this 30-minute historical window — 720/720/68 lines across access/application/error logs, deduped and cited per question above.
