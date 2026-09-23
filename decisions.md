@@ -36,3 +36,11 @@ storage and any other meaningful choices.
 - Trade-off: Removing the host ports means you lose the convenience of connecting a local GUI client (e.g. psql, RedisInsight) directly from the host for debugging. The safer alternative is `docker exec -it postgres psql ...` or `docker exec -it redis redis-cli`, which stays inside the Docker network and requires no published port at all.
 - Evidence / commit: `docker compose ps --format "table {{.Name}}\t{{.Ports}}"` shows only nginx with a host-side port (`127.0.0.1:8080->80/tcp`); postgres and redis show container-only ports. Commit: 3aa0d8c.
 - Production improvement: In production, extend this further — no direct host access to data-tier services at all; use a bastion host or VPN with time-limited, audited access instead of open ports.
+
+## Decision: nginx only on the frontend network
+- Choice: nginx is attached only to `frontend`, not `backend`.
+- Why: nginx's only job is to proxy client requests to app-01/app-02. It never needs to talk to postgres or redis directly.
+- Alternative: Keep nginx on both networks (simpler compose file, one less thing to think about).
+- Trade-off: Being on both networks would work fine functionally, but breaks the task's isolation requirement and is a real security risk — if nginx were ever compromised, an attacker could reach the database directly.
+- Evidence / commit: `nc -zv` from nginx to postgres/redis failed after the fix (was open before). Commit: ed9854f
+- Production improvement: none — this is already the correct production pattern (least privilege networking).

@@ -172,3 +172,17 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: 6-request loop to `/instance` now alternates cleanly: app-02, app-01, app-02, app-01, app-02, app-01.
 - Related commit: 9099880 - "fix: correct app-02 INSTANCE_ID value (was app-01)"
 - Remaining uncertainty: none
+
+
+## Nginx could reach postgres/redis directly (Part 2) / 2026-09-23 / 8:55 am
+
+- Symptom: Task requires nginx blocked from postgres/redis. wget test showed errors, looked blocked.
+- Hypothesis: wget errors meant the connection was blocked.
+- Command or test: `nc -zv -w3 postgres 5432` and same for redis, from inside nginx container.
+- Actual output: both showed "open" — nginx could reach them at the TCP level. wget only failed because postgres/redis don't speak HTTP, not because the network blocked it.
+- Failed attempt and what changed your thinking: Trusted wget's failure as proof of isolation. nc proved the opposite — ports were open. Learned wget only tests HTTP, not raw TCP reachability.
+- Root cause: nginx was attached to both `frontend` and `backend` networks in docker-compose.yml. Being on `backend` let it reach postgres/redis directly, bypassing isolation.
+- Fix: Removed `backend` from nginx's `networks:` list — nginx now only on `frontend`.
+- Retest evidence: `nc` now returns "bad address" (can't resolve postgres/redis at all). `/ready` still shows both dependencies healthy via the app containers.
+- Related commit: ed9854f - "fix: remove nginx from backend network (was reachable to postgres/redis directly)"
+- Remaining uncertainty: none — fix confirmed directly.
