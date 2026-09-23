@@ -2,7 +2,7 @@ name: barq-assessment
 x-app: &app
   build: .
   init: true
-  restart: "no"
+  restart: "unless-stopped"
   env_file: ./config/app.env
   environment: &app-env
     APP_HOST: "0.0.0.0"
@@ -32,6 +32,7 @@ services:
       timeout: 3s
       retries: 10
     networks: [backend]
+    restart: "unless-stopped"
   redis:
     image: redis:7.4-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
     container_name: redis
@@ -44,6 +45,7 @@ services:
       timeout: 2s
       retries: 5
     networks: [backend]
+    restart: "unless-stopped"
   app-01:
     <<: *app
     container_name: app-01
@@ -69,6 +71,7 @@ services:
       timeout: 3s
       retries: 3
       start_period: 3s
+    restart: "unless-stopped"  
 networks:
   frontend:
   backend:
