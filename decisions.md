@@ -68,3 +68,12 @@ storage and any other meaningful choices.
 
 Result: counter went 1→2→(redis restart)→3, not reset. Commit: ae0324f.
 - Production improvement: consider AOF rewrite tuning (`auto-aof-rewrite-percentage`) for high write volume.
+
+
+## Decision: Base image and healthcheck choice
+- Choice: Used `-alpine` variants for nginx, postgres, and redis (small, official images). Healthchecks use tools already inside each image — `wget --spider` for nginx, `pg_isready` for postgres, `redis-cli ping` for redis — no extra tools installed.
+- Why: Alpine images are much smaller than full Debian/Ubuntu-based ones (faster pulls, smaller attack surface, fewer packages to patch). Using each image's built-in tool for healthchecks avoids installing curl or other extras just for checking — keeps images minimal, as the brief asks ("Use required dependencies only").
+- Alternative: Full Debian-based images (e.g. `nginx:1.28`, `postgres:16`) with curl pre-installed, or a dedicated healthcheck tool added via package manager.
+- Trade-off: Alpine uses musl libc instead of glibc, which occasionally causes subtle compatibility issues with some software — not a problem here since official images are built/tested for alpine. Slightly less tooling available inside the container (e.g. no bash by default) means healthcheck commands must use what's already there (wget, not curl, in nginx's case worked fine).
+- Evidence / commit: `docker compose ps -a` shows all 5 containers `(healthy)`. Commit:2e0ed93 .
+- Production improvement: none needed — alpine + built-in tool healthchecks is already the recommended lightweight production pattern.
