@@ -85,3 +85,12 @@ Result: counter went 1→2→(redis restart)→3, not reset. Commit: ae0324f.
 - Trade-off: `always` would break the failure test by auto-restarting a container the test just stopped on purpose. `on-failure` wouldn't help after a host reboot if a container exited cleanly. `unless-stopped` balances both cases correctly for this project.
 - Evidence / commit: `docker compose ps -a` shows all 5 containers healthy after applying the policy. Commit: 654f050 .
 - Production improvement: none — `unless-stopped` (or an orchestrator-managed restart policy like Kubernetes' `Always` with proper liveness probes) is already standard practice.
+
+
+## Decision: Resource limits per service
+- Choice: Set different CPU/memory limits per service instead of one blanket value — nginx: 0.25 CPU/64M, app-01+app-02: 0.5 CPU/256M each, redis: 0.25 CPU/128M, postgres: 0.75 CPU/512M.
+- Why: Each service has different real needs. nginx just proxies requests (lightweight); postgres runs actual queries and needs the most headroom; the app containers sit in between; redis is in-memory but the dataset here is tiny.
+- Alternative: One uniform limit for all 5 services (simpler to write, less to reason about).
+- Trade-off: Uniform limits either starve postgres (if set low, matching nginx) or waste resources on nginx (if set high, matching postgres). Per-service limits use the machine's stated 2 CPU/4GB budget more efficiently — total here is ~2.5 CPU/~1.2GB, comfortably within the README's suggested capacity.
+- Evidence / commit: `docker compose ps -a` — all 5 containers still `(healthy)` after limits applied, no crashes or OOM kills. Commit: 8531ec3 .
+- Production improvement: In real deployment, size limits from actual load-tested metrics (CPU/memory profiling under expected traffic), not estimates, and pair with autoscaling instead of static caps.
