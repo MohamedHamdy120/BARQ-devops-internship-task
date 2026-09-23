@@ -186,3 +186,29 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `nc` now returns "bad address" (can't resolve postgres/redis at all). `/ready` still shows both dependencies healthy via the app containers.
 - Related commit: ed9854f - "fix: remove nginx from backend network (was reachable to postgres/redis directly)"
 - Remaining uncertainty: none — fix confirmed directly.
+
+## Postgres data not actually persisted (Part 2) / 2026-09-23 / [time]
+
+- Symptom: Task requires proving a record survives postgres container recreation (Part 3). Checked config before testing.
+- Hypothesis: Since a named volume (`postgres-data`) was already defined and listed in `docker volume ls`, persistence should already work.
+- Command or test: Reviewed docker-compose.yml postgres volumes — `postgres-data` was mounted to `/var/lib/postgresql/backup`, while `/var/lib/postgresql/data` (postgres's real data directory) was mounted as `tmpfs`.
+- Actual output: `tmpfs` is memory-backed and wiped on stop; the named volume was attached to the wrong path entirely, so it held nothing postgres actually used.
+- Failed attempt and what changed your thinking: Assumed "a named volume exists" was enough to satisfy the requirement. Reading the actual mount paths showed the volume wasn't protecting postgres's real data directory at all — it was effectively a no-op.
+- Root cause: `postgres-data` volume mounted to `/var/lib/postgresql/backup` instead of `/var/lib/postgresql/data`; real data directory left on `tmpfs`.
+- Fix: Removed `tmpfs:` entry; changed volume mount to `/var/lib/postgresql/data`.
+- Retest evidence: 
+```
+{
+  echo "=== Postgres persistence test ==="
+  echo "Creating record..."
+  curl -s -X POST http://127.0.0.1:8080/records -H "Content-Type: application/json" -d '{"title":"real-persistence-test"}'; echo
+  echo "Recreating postgres, app-01, app-02..."
+  docker compose -p barq-assessment up -d --force-recreate postgres app-01 app-02
+  sleep 5
+  echo "Records after recreation:"
+  curl -s http://127.0.0.1:8080/records; echo
+} | tee troubleshooting_evidence/postgres_persistence_check.txt
+```
+`troubleshooting_evidence/postgres_persistence_check.txt` — record survives postgres+app recreation.
+- Related commit: 79f718a - "fix: mount postgres-data volume to actual data dir (was tmpfs + wrong path)"
+- Remaining uncertainty: none — confirmed directly with a real record surviving recreation.

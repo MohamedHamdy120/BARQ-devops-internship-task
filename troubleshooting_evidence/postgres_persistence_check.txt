@@ -1,0 +1,8 @@
+=== Postgres persistence test ===
+Creating record...
+{"instance_id":"app-02","record":{"id":4,"title":"real-persistence-test"},"service":"barq-api","version":"2.0.0"}
+
+Recreating postgres, app-01, app-02...
+Records after recreation:
+{"instance_id":"app-01","records":[{"id":1,"title":"Review service readiness"},{"id":2,"title":"Document the operating procedure"},{"id":3,"title":"real-persistence-test"},{"id":4,"title":"real-persistence-test"}],"service":"barq-api","version":"2.0.0"}
+
