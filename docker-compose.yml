@@ -8,6 +8,11 @@ x-app: &app
     APP_HOST: "0.0.0.0"
     APP_PORT: "8080"
     APP_MESSAGE: "Welcome to BARQ Systems"
+  deploy: 
+    resources:
+      limits:
+        cpus: "0.5"
+        memory: 256M
   healthcheck:
     test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)"]
     interval: 5s
@@ -17,6 +22,11 @@ x-app: &app
   networks: [frontend, backend]
 services:
   postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 512M
     image: postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
     container_name: postgres
     environment:
@@ -34,6 +44,11 @@ services:
     networks: [backend]
     restart: "unless-stopped"
   redis:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
     image: redis:7.4-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
     container_name: redis
     command: ["redis-server", "--appendonly", "yes"]
@@ -59,6 +74,11 @@ services:
       <<: *app-env
       INSTANCE_ID: "app-02"
   nginx:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
     image: nginx:1.28-alpine@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236
     container_name: nginx
     ports: ["127.0.0.1:${PUBLIC_PORT:-8080}:80"]
