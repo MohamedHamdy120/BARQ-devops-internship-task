@@ -225,3 +225,17 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `docker exec app-01 whoami` → `app`. Rebuilt containers show `(healthy)`; `/health` returns 200 through nginx.
 - Related commit: 5d8dddb - "fix: remove USER root override, run app containers as non-root (uid 10001)"
 - Remaining uncertainty: none — confirmed directly.
+
+
+## config/app.env committed with real secret (Part 2) / 2026-09-23 / 5:00 pm
+
+- Symptom: Checked whether any real secrets were committed to git history, as required by the brief.
+- Hypothesis: Since `.env` was properly gitignored, all secrets were assumed safe.
+- Command or test: `git log --all --full-history -- config/app.env`
+- Actual output: `config/app.env` (containing the real postgres password) was tracked in git since the baseline commit, and committed again with the real password in a later fix commit.
+- Failed attempt and what changed your thinking: Assumed `.gitignore` covering `.env` meant all env files were covered. `config/app.env` used a different path/name and was never added to `.gitignore`, so it was tracked the whole time.
+- Root cause: `config/app.env` missing from `.gitignore`; no `.example` version existed either.
+- Fix: Added `config/app.env` to `.gitignore`, removed it from tracking with `git rm --cached`, created `config/app.env.example` with placeholder values.
+- Retest evidence: `git status` shows `config/app.env` untracked; file still present on disk; containers remain healthy.
+- Related commit: 4b8fd3d - "fix: stop tracking config/app.env (contained real secret), add safe .env.example"
+- Remaining uncertainty: Real password remains in git history on earlier commits (baseline + prior fix commit). Since this is synthetic lab data per the brief, not rewriting history; noting this as a known limitation rather than a live risk.
