@@ -187,7 +187,7 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Related commit: ed9854f - "fix: remove nginx from backend network (was reachable to postgres/redis directly)"
 - Remaining uncertainty: none — fix confirmed directly.
 
-## Postgres data not actually persisted (Part 2) / 2026-09-23 / [time]
+## Postgres data not actually persisted (Part 2) / 2026-09-23 / 11:50 am
 
 - Symptom: Task requires proving a record survives postgres container recreation (Part 3). Checked config before testing.
 - Hypothesis: Since a named volume (`postgres-data`) was already defined and listed in `docker volume ls`, persistence should already work.
@@ -212,3 +212,16 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 `troubleshooting_evidence/postgres_persistence_check.txt` — record survives postgres+app recreation.
 - Related commit: 79f718a - "fix: mount postgres-data volume to actual data dir (was tmpfs + wrong path)"
 - Remaining uncertainty: none — confirmed directly with a real record surviving recreation.
+
+## App containers running as root (Part 2) / 2026-09-23 / 3:30 pm
+
+- Symptom: `docker exec app-01 whoami` returned `root`, failing the "avoid root/privileged operation" requirement.
+- Hypothesis: Dockerfile never created a non-root user at all.
+- Command or test: `cat Dockerfile`.
+- Actual output: Dockerfile already created a non-root user (`app`, uid 10001) and copied app code with `--chown=app:app` — but had an explicit `USER root` line right before `CMD`, overriding all of that.
+- Failed attempt and what changed your thinking: Expected to need to add a user from scratch. Reading the file showed the setup was already correct; the bug was one leftover line undoing it.
+- Root cause: `USER root` instruction placed after the non-root user setup, switching the final running user back to root.
+- Fix: Changed `USER root` to `USER app`.
+- Retest evidence: `docker exec app-01 whoami` → `app`. Rebuilt containers show `(healthy)`; `/health` returns 200 through nginx.
+- Related commit: 5d8dddb - "fix: remove USER root override, run app containers as non-root (uid 10001)"
+- Remaining uncertainty: none — confirmed directly.
