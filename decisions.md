@@ -77,3 +77,11 @@ Result: counter went 1→2→(redis restart)→3, not reset. Commit: ae0324f.
 - Trade-off: Alpine uses musl libc instead of glibc, which occasionally causes subtle compatibility issues with some software — not a problem here since official images are built/tested for alpine. Slightly less tooling available inside the container (e.g. no bash by default) means healthcheck commands must use what's already there (wget, not curl, in nginx's case worked fine).
 - Evidence / commit: `docker compose ps -a` shows all 5 containers `(healthy)`. Commit:2e0ed93 .
 - Production improvement: none needed — alpine + built-in tool healthchecks is already the recommended lightweight production pattern.
+
+## Decision: Restart policy — unless-stopped
+- Choice: All 5 services use `restart: unless-stopped`.
+- Why: Containers should recover automatically from crashes or a host reboot, but not fight against intentional manual stops — needed for `failure_test.sh`, which deliberately stops a backend to test recovery.
+- Alternative: `restart: always` (also restarts after manual `docker stop`) or `restart: on-failure` (only restarts on non-zero exit, not clean stops).
+- Trade-off: `always` would break the failure test by auto-restarting a container the test just stopped on purpose. `on-failure` wouldn't help after a host reboot if a container exited cleanly. `unless-stopped` balances both cases correctly for this project.
+- Evidence / commit: `docker compose ps -a` shows all 5 containers healthy after applying the policy. Commit: 654f050 .
+- Production improvement: none — `unless-stopped` (or an orchestrator-managed restart policy like Kubernetes' `Always` with proper liveness probes) is already standard practice.
