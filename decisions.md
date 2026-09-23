@@ -44,3 +44,27 @@ storage and any other meaningful choices.
 - Trade-off: Being on both networks would work fine functionally, but breaks the task's isolation requirement and is a real security risk — if nginx were ever compromised, an attacker could reach the database directly.
 - Evidence / commit: `nc -zv` from nginx to postgres/redis failed after the fix (was open before). Commit: ed9854f
 - Production improvement: none — this is already the correct production pattern (least privilege networking).
+
+## Decision: Redis persistence via AOF
+- Choice: Enabled `--appendonly yes` with a named volume (`redis-data`), replacing the starter's `--save "" --appendonly no` (no persistence).
+- Why: `/counter` is a required, graded endpoint — its value should survive a restart, not silently reset to 0.
+- Alternative: RDB snapshots (`--save`) instead of AOF.
+- Trade-off: AOF is more durable (logs every write) but slightly slower than RDB snapshots; fine for this scale.
+- Evidence / commit:
+
+```bash
+{
+  echo "=== Redis persistence test ==="
+  echo "Before restart:"
+  curl -s http://127.0.0.1:8080/counter; echo
+  curl -s http://127.0.0.1:8080/counter; echo
+  echo "Restarting redis..."
+  docker compose -p barq-assessment restart redis
+  sleep 2
+  echo "After restart:"
+  curl -s http://127.0.0.1:8080/counter; echo
+} | tee troubleshooting_evidence/redis_persistence_check.txt
+```
+
+Result: counter went 1→2→(redis restart)→3, not reset. Commit: ae0324f.
+- Production improvement: consider AOF rewrite tuning (`auto-aof-rewrite-percentage`) for high write volume.

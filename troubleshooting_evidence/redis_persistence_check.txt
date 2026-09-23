@@ -1,0 +1,10 @@
+=== Redis persistence test ===
+Before restart:
+{"counter":4,"instance_id":"app-02","service":"barq-api","version":"2.0.0"}
+
+{"counter":5,"instance_id":"app-01","service":"barq-api","version":"2.0.0"}
+
+Restarting redis...
+After restart:
+{"counter":6,"instance_id":"app-02","service":"barq-api","version":"2.0.0"}
+
