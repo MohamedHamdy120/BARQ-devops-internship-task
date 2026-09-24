@@ -103,3 +103,12 @@ Result: counter went 1→2→(redis restart)→3, not reset. Commit: ae0324f.
 - Trade-off: Retrying on failure adds latency to affected requests (has to try the dead backend first, then fail over) and slightly more complexity to reason about. `max_fails=1` is aggressive — a single failure marks a backend down for 5s, which is fine for this lab but might be too sensitive for a flaky network in production (could cause unnecessary failover on a one-off blip).
 - Evidence / commit: `failure_test.py` — 0 timeouts during backend failure after the fix, vs 3/6 before. Commit: f038bd4.
 - Production improvement: tune `fail_timeout` and `max_fails` based on real traffic patterns; consider active health checks (NGINX Plus or a sidecar) instead of purely passive failure detection.
+
+
+## Decision: Fixed CI-only database password instead of GitHub Secrets
+- Choice: CI workflow writes a hardcoded password (`ci_lab_password_123`) into `config/app.env` and `POSTGRES_PASSWORD` during the run, instead of using a GitHub repository secret.
+- Why: Simpler to set up under time pressure — no repo configuration step outside the codebase, and the value only ever exists inside a disposable GitHub Actions runner.
+- Alternative: Store the real/CI password as a GitHub Actions secret (`secrets.CI_DB_PASSWORD`) and inject it into both `config/app.env` and `docker-compose.yml`'s `POSTGRES_PASSWORD`.
+- Trade-off: A hardcoded value in a committed workflow file is visible to anyone with repo access — not ideal practice even for a throwaway value. Acceptable here since it's synthetic lab data (per the brief), never protects real data, and the runner (including postgres) is destroyed after every CI run.
+- Evidence / commit: CI run passed (green) using this password. Commit: bcc57cc.
+- Production improvement: Use GitHub Secrets (or an equivalent secret manager) for any credential in a real CI/CD pipeline, even a database used only for testing.
