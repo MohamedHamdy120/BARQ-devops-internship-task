@@ -252,3 +252,17 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `troubleshooting_evidence/failure_test_run.txt` — all 6 requests during failure returned 200 (0 timeouts); app-01 rejoins rotation after restart.
 - Related commit: f038bd4 - "fix: nginx failover (max_fails=0 -> 1, proxy_next_upstream off -> error/timeout);failure_test.py passing"
 - Remaining uncertainty: none — confirmed directly with failure_test.py.
+
+
+## Restore silently failed despite "success" message (Part 3) / 2026-09-24 / 11:25 am
+
+- Symptom: First `restore.sh` run printed a wall of SQL errors (relation already exists, duplicate key) but still ended with "Restored from...". Checking `/records` afterward showed only the 2 seed records — the backed-up record was actually missing.
+- Hypothesis: The script's final "Restored from..." message meant the restore succeeded.
+- Command or test: `curl /records` after running restore.sh, comparing against what should have been restored.
+- Actual output: Only seed records (id 1,2) present; the pre-restore record (id 5) was gone despite no non-zero exit and a "success" message printed.
+- Failed attempt and what changed your thinking: Trusted the script's own printed message as proof of success. Checking actual data showed it lied — `pg_dump`'s default output included `CREATE TABLE` statements that failed because `init.sql` already creates the schema on every fresh container, and the data insert also failed due to duplicate seed-record IDs. The script didn't check for these errors and printed "Restored" regardless.
+- Root cause: `pg_dump` without `--data-only` dumps schema + data; schema already exists (via init.sql), causing errors that blocked the actual data restore, but the script had no error-checking on the restore step.
+- Fix: `backup.sh` now uses `pg_dump --data-only --column-inserts` (data only, human-readable inserts). `restore.sh` now runs `TRUNCATE records RESTART IDENTITY CASCADE` before restoring, so old/seed rows are cleared cleanly first.
+- Retest evidence: `troubleshooting_evidence/backup_restore_check.txt` — record created, volume wiped, restored, confirmed present with no errors.
+- Related commit: 948a072 - "backup.sh/restore.sh (data-only + truncate-before-restore), verified working"
+- Remaining uncertainty: none — restore now verified against actual data, not just script output.
