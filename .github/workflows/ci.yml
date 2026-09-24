@@ -11,15 +11,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Compose syntax
-        run: docker compose -p barq-assessment config --quiet
-
       - name: Create .env and app.env for CI
         run: |
           cp .env.example .env
           echo "DATABASE_URL=postgresql://barq_app:ci_lab_password_123@postgres:5432/barq_tasks" > config/app.env
           echo "REDIS_URL=redis://redis:6379/0" >> config/app.env
           echo "POSTGRES_PASSWORD=ci_lab_password_123" >> $GITHUB_ENV
+
+      - name: Validate Compose syntax
+        run: docker compose -p barq-assessment config --quiet
 
       - name: Build and start stack
         run: docker compose -p barq-assessment up -d --build
