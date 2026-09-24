@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Compose syntax
+        run: docker compose -p barq-assessment config --quiet
+
+      - name: Create .env and app.env for CI
+        run: |
+          cp .env.example .env
+          echo "DATABASE_URL=postgresql://barq_app:ci_lab_password_123@postgres:5432/barq_tasks" > config/app.env
+          echo "REDIS_URL=redis://redis:6379/0" >> config/app.env
+          echo "POSTGRES_PASSWORD=ci_lab_password_123" >> $GITHUB_ENV
+
+      - name: Build and start stack
+        run: docker compose -p barq-assessment up -d --build
+
+      - name: Wait for services to be healthy
+        run: |
+          for i in $(seq 1 30); do
+            unhealthy=$(docker compose -p barq-assessment ps --format json | grep -c '"Health":"starting"' || true)
+            if [ "$unhealthy" -eq 0 ]; then
+              echo "Services ready"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Run validate.py
+        run: python3 validate.py
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose -p barq-assessment logs --no-color
