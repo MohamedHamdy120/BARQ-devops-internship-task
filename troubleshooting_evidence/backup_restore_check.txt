@@ -1,0 +1,7 @@
+=== Backup/restore persistence test ===
+Record before backup: id:6 restore-test-2
+Backup file: backups/backup_20260924_115740.sql
+Volume wiped, containers recreated
+After restore:
+{"instance_id":"app-01","records":[{"id":1,"title":"Review service readiness"},{"id":2,"title":"Document the operating procedure"},{"id":6,"title":"restore-test-2"}],"service":"barq-api","version":"2.0.0"}
+
