@@ -1,97 +1,90 @@
-<img src="assets/barq-logo.svg" alt="BARQ Systems" width="180">
+# BARQ DevOps Internship Task
 
-# DevOps Internship Task - Starter v2
+Fixed, tested, and documented environment: two Flask instances behind NGINX, with PostgreSQL and Redis.
 
-**Due date:** ____________________
-
-**Time window:** 4 calendar days from the invitation email date/time.
-
-Read [the task](assessment/TASK.md), then [the API contract](assessment/APPLICATION.md).
-Everyone receives this same release. The environment is intentionally broken.
-Hidden issue types and count are not disclosed. Investigate this project; do not replace it.
-
-## Included
-
-- Flask API, PostgreSQL, Redis, Docker and NGINX starter files.
-- Three historical logs, a question template and documentation templates.
-- App-only tests and a recorded challenge script.
-- Unimplemented validation, failure-test and backup/restore placeholders.
-
-Use synthetic lab accounts/data only. Supplied values are for this disposable exercise,
-never for real services. Keep the lab on your local machine; do not expose it publicly.
-
-## Before you start
-
-- Linux or WSL2, Python 3.12, Git and Docker with Compose.
-- Docker Desktop must use Linux containers. Run shell scripts in Linux/WSL.
-- Suggested capacity: 2 CPU cores, 4 GB free RAM and 3 GB free disk, plus Docker overhead.
-- Internet for first downloads and GitHub. No cloud account or paid registry required.
-- Use a machine where container names app-01, app-02, nginx, postgres and redis are unused.
-  Do not delete someone else's containers to free those names.
-- Intended public port: 8080 before the video, 8090 after the live change.
-  If either is occupied, ask the organizer for a documented workstation exception.
-
-## Start
-
-Clone the supplied Git bundle/repository. Keep both release commits and the v2 baseline tag.
-Set your own Git name/email before making changes.
-
-From the repository root:
+## Setup
 
 ```bash
-git status
-git log -2 --oneline
+git clone https://github.com/MohamedHamdy120/BARQ-devops-internship-task
+cd barq-academy
 cp .env.example .env
-docker version
-docker compose version
-docker compose -p barq-assessment up --build -d
+cp config/app.env.example config/app.env
+```
+
+Edit `config/app.env` and replace `CHANGE_ME` in `DATABASE_URL` with the password set in
+`docker-compose.yml`'s `POSTGRES_PASSWORD` (lab-only synthetic value, never a real credential).
+
+## Build & Start
+
+```bash
+docker compose -p barq-assessment up -d --build
 docker compose -p barq-assessment ps -a
-docker compose -p barq-assessment logs --no-color
 ```
 
-The initial environment is not expected to pass. Record what actually happens.
-The intended URL is http://127.0.0.1:8080; do not assume the starter configuration is correct.
+All 5 containers (app-01, app-02, nginx, postgres, redis) should show `healthy` within ~15 seconds.
 
-App-only checks use fake dependencies, not real SQL/Redis or Docker networking:
+## Verify endpoints
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
+curl -s http://127.0.0.1:8080/
+curl -s http://127.0.0.1:8080/health
+curl -s http://127.0.0.1:8080/ready
+curl -s http://127.0.0.1:8080/instance
+curl -s http://127.0.0.1:8080/records
+curl -s http://127.0.0.1:8080/counter
 ```
 
-## Your work
-
-- Complete [assessment/TASK.md](assessment/TASK.md).
-- Implement validate.py, failure_test.py, backup.sh and restore.sh, or documented equivalents.
-  Placeholders deliberately exit 2; they are unfinished deliverables, not validation evidence.
-- Create .github/workflows/ci.yml yourself.
-- Complete the root report templates and docs/EVIDENCE_INDEX.md.
-- Add architecture.png or architecture.pdf.
-- Replace this README with copyable setup/build/run/test/failure/backup/restore/cleanup commands.
-- Commit as you work. Do not commit real secrets, backups, virtual environments or challenge state.
-
-## Recorded challenge
-
-Use the supplied video_challenge.sh unchanged. Read its code if needed; do not run it early.
-After repairing the environment, run it once, for the first time in the video working copy,
-during the continuous 12-18 minute recording. The script requires healthy services, both
-initial instances and the target network layout. Preflight failures make no runtime changes.
+## Run validation
 
 ```bash
-./video_challenge.sh
+python3 validate.py
 ```
 
-If you deliberately changed the project name, pass --project YOUR_PROJECT.
-An organizer-approved alternate local URL can be passed with --url http://127.0.0.1:PORT.
-The script touches only matching Compose-owned lab containers/networks.
-Keep the receipt in .assessment/challenge.json for the evidence index. Do not delete the
-one-run marker to retry. A local marker is not tamper-proof; ownership is judged from evidence.
-Do not use docker compose down to reset the runtime challenge.
+Runs 10 checks (endpoint availability, both backends responding, postgres/redis readiness,
+prohibited host ports closed, network isolation) — exits non-zero on any failure.
 
-## Stop safely
+## Run failure test
 
-Outside the recorded challenge, docker compose -p barq-assessment down stops this lab.
-Do not use --volumes during persistence tests. Avoid global Docker prune/cleanup commands.
-Back up anything you need before removing containers; investigate whether data actually persists.
+```bash
+python3 failure_test.py
+```
+
+Stops app-01, proves traffic continues via app-02, restarts app-01, proves it rejoins rotation.
+
+## Backup & restore
+
+```bash
+./backup.sh
+# creates backups/backup_<timestamp>.sql
+
+./restore.sh backups/backup_<timestamp>.sql
+```
+
+To prove persistence across container recreation:
+```bash
+curl -s -X POST http://127.0.0.1:8080/records -H "Content-Type: application/json" -d '{"title":"test"}'
+docker compose -p barq-assessment up -d --force-recreate postgres app-01 app-02
+curl -s http://127.0.0.1:8080/records   # record still present
+```
+
+## Cleanup
+
+```bash
+docker compose -p barq-assessment down
+```
+
+Do not use `--volumes` unless you intend to permanently delete postgres/redis data.
+
+## Documentation
+
+- `troubleshooting.md` — investigation journal, including failed attempts
+- `log_analysis.md` — log analysis questions and answers
+- `decisions.md` — technical decisions and trade-offs
+- `security_review.md` — security risks and improvements
+- `AI_USAGE.md` — AI tool usage disclosure
+- `architecture.png` — request flow, ports, networks, storage diagram
+- `docs/EVIDENCE_INDEX.md` — requirement → file/output → commit → video timestamp mapping
+
+## CI
+
+`.github/workflows/ci.yml` builds the stack and runs `validate.py` on every push/PR.
