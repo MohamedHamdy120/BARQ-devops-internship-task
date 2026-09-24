@@ -1,0 +1,12 @@
+[PASS] nginx reachable on 8080
+[PASS] /health returns 200
+[PASS] /ready returns 200
+[PASS] /records returns 200
+[PASS] /counter returns 200
+[PASS] both app-01 and app-02 respond via /instance
+[PASS] postgres port not published on host
+[PASS] redis port not published on host
+[PASS] nginx cannot reach postgres directly
+[PASS] nginx cannot reach redis directly
+
+10/10 passed.
