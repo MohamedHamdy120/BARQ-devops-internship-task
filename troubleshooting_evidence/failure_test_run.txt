@@ -1,0 +1,21 @@
+app-01
+app-01
+Stopping app-01...
+Traffic during failure:
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+Restarting app-01...
+Traffic after recovery:
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-01","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-01","service":"barq-api","status":"ok","
+  200 {"instance_id":"app-02","service":"barq-api","status":"ok","
+
+[PASS] service stayed available during backend failure
+[PASS] app-01 serving requests again after restart
