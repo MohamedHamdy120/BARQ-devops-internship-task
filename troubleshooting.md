@@ -239,3 +239,16 @@ Do not fabricate a failed attempt just to fill the template. Record actual attem
 - Retest evidence: `git status` shows `config/app.env` untracked; file still present on disk; containers remain healthy.
 - Related commit: 4b8fd3d - "fix: stop tracking config/app.env (contained real secret), add safe .env.example"
 - Remaining uncertainty: Real password remains in git history on earlier commits (baseline + prior fix commit). Since this is synthetic lab data per the brief, not rewriting history; noting this as a known limitation rather than a live risk.
+
+## NGINX failover broken during backend failure (Part 3) / 2026-09-24 / 10:20 am
+
+- Symptom: `failure_test.py` stopped app-01 and showed 3 of 6 requests returning HTTP 504 instead of failing over to app-02.
+- Hypothesis: NGINX should automatically route to the remaining healthy backend when one fails.
+- Command or test: Inspected nginx.conf — found `proxy_next_upstream off;` and `max_fails=0` on both upstream servers.
+- Actual output: `off` disables retrying a different backend on failure entirely. `max_fails=0` tells NGINX to never mark a server as down, so it kept trying the dead app-01 on every request instead of remembering it failed.
+- Failed attempt and what changed your thinking: First fix (`proxy_next_upstream error timeout ...`) alone didn't fully resolve it — still got timeouts on rerun. Also had to force a real container restart, since editing the mounted nginx.conf file doesn't auto-reload the running nginx process. Found the second compounding cause (`max_fails=0`) only after confirming the first fix was actually loaded and still seeing failures.
+- Root cause: Two settings combined blocked failover — `proxy_next_upstream off` (no retry on a different backend) and `max_fails=0` on both upstream servers (dead backend never marked down, so NGINX kept retrying it).
+- Fix: Changed to `proxy_next_upstream error timeout http_502 http_503 http_504;` with `proxy_next_upstream_tries 2;`, and `max_fails=1 fail_timeout=5s` on both servers.
+- Retest evidence: `troubleshooting_evidence/failure_test_run.txt` — all 6 requests during failure returned 200 (0 timeouts); app-01 rejoins rotation after restart.
+- Related commit: f038bd4 - "fix: nginx failover (max_fails=0 -> 1, proxy_next_upstream off -> error/timeout);failure_test.py passing"
+- Remaining uncertainty: none — confirmed directly with failure_test.py.

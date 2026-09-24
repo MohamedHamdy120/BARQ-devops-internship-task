@@ -94,3 +94,12 @@ Result: counter went 1→2→(redis restart)→3, not reset. Commit: ae0324f.
 - Trade-off: Uniform limits either starve postgres (if set low, matching nginx) or waste resources on nginx (if set high, matching postgres). Per-service limits use the machine's stated 2 CPU/4GB budget more efficiently — total here is ~2.5 CPU/~1.2GB, comfortably within the README's suggested capacity.
 - Evidence / commit: `docker compose ps -a` — all 5 containers still `(healthy)` after limits applied, no crashes or OOM kills. Commit: 8531ec3 .
 - Production improvement: In real deployment, size limits from actual load-tested metrics (CPU/memory profiling under expected traffic), not estimates, and pair with autoscaling instead of static caps.
+
+
+## Decision: NGINX upstream failover settings
+- Choice: `proxy_next_upstream error timeout http_502 http_503 http_504;` with `proxy_next_upstream_tries 2;`, and `max_fails=1 fail_timeout=5s` per upstream server.
+- Why: A dead backend should not cause client-visible errors when a healthy backend is available — the whole point of running two app instances.
+- Alternative: Keep `proxy_next_upstream off` (starter default) — simplest, but means any single backend failure directly causes client errors, defeating the purpose of redundancy.
+- Trade-off: Retrying on failure adds latency to affected requests (has to try the dead backend first, then fail over) and slightly more complexity to reason about. `max_fails=1` is aggressive — a single failure marks a backend down for 5s, which is fine for this lab but might be too sensitive for a flaky network in production (could cause unnecessary failover on a one-off blip).
+- Evidence / commit: `failure_test.py` — 0 timeouts during backend failure after the fix, vs 3/6 before. Commit: f038bd4.
+- Production improvement: tune `fail_timeout` and `max_fails` based on real traffic patterns; consider active health checks (NGINX Plus or a sidecar) instead of purely passive failure detection.
