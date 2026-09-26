@@ -13,7 +13,7 @@ Match the final README, diagram, GitHub code and video (three instances, public 
 
 
 - Repository URL: https://github.com/MohamedHamdy120/BARQ-devops-internship-task
-- Final commit: 730a4b9
+- Final commit: 0984a6f
 - Matching CI run: https://github.com/MohamedHamdy120/BARQ-devops-internship-task/actions/runs/36237527245
 - Continuous 12-18 minute video URL: https://drive.google.com/file/d/16_8assB9VnwDqQ76cnOBtPY8DGJBArbz/view
 - Challenge receipt ID: e49437b049854b818839ea3877f68ea7
