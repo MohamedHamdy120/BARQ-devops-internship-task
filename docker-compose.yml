@@ -73,6 +73,12 @@ services:
     environment:
       <<: *app-env
       INSTANCE_ID: "app-02"
+  app-03:
+    <<: *app
+    container_name: app-03
+    environment:
+      <<: *app-env
+      INSTANCE_ID: "app-03"
   nginx:
     deploy:
       resources:
