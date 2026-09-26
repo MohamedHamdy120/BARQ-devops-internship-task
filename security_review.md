@@ -56,3 +56,10 @@
 - Implemented fix / commit: None
 - Production follow-up: Postgres replication (primary + replica), Redis Sentinel/Cluster, multiple nginx instances behind a load balancer.
 - How to verify: n/a — documented as a known limitation.
+
+
+## Limitation: validation script not port-aware
+- Risk: validate.py assumes the service is always on port 8080. After a live port change (e.g. to 8090, as required in Part 5), the script fails entirely rather than adapting — meaning automated validation cannot follow a live config change without manual editing.
+- Impact: low for this exercise (caught immediately, documented); in production this pattern would mean monitoring/validation tooling silently stops working after a legitimate config change unless someone remembers to update it too.
+- Implemented fix: none — documented as-is with real failing output (see evidence index).
+- Production improvement: parameterize the target URL/port via CLI arg, env var, or service discovery, so validation tracks the actual running config automatically.
