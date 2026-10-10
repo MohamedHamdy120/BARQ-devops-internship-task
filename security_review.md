@@ -50,7 +50,7 @@
 - How to verify: `troubleshooting_evidence/failure_test_run.txt` — 0/6 requests failed after the fix.
 
 
-## Finding 8: Single points of failure remain
+## Finding 8:  Single points of failure remain
 - Risk and evidence: Single postgres instance, single redis instance, single nginx instance — each is a single point of failure despite the app layer being redundant (app-01/app-02).
 - Impact: postgres, redis, or nginx going down takes down the entire stack, regardless of app-layer redundancy.
 - Implemented fix / commit: None

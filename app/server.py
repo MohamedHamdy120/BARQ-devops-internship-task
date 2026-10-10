@@ -49,7 +49,7 @@ class Dependencies:
 def create_app(config=None, dependencies=None):
     app = Flask(__name__)
     app.config.update(INSTANCE_ID=os.getenv("INSTANCE_ID", "local"),
-                      APP_MESSAGE=os.getenv("APP_MESSAGE", "Welcome to BARQ Systems"),
+                      APP_MESSAGE=os.getenv("APP_MESSAGE", "Welcome to BARQ Systems test message"),
                       MAX_CONTENT_LENGTH=16 * 1024)
     if config:
         app.config.update(config)
