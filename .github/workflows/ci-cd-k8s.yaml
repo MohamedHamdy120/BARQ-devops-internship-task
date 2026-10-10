@@ -1,0 +1,26 @@
+name: ci-cd
+on:
+  push:
+    branches: [k8s-task]
+    paths: ['app/**', 'Dockerfile', 'requirements.txt']
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/barq-app:${{ github.sha }}
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - run: |
+          kubectl -n barq set image deployment/app app=${{ secrets.DOCKERHUB_USERNAME }}/barq-app:${{ github.sha }}
+          kubectl -n barq rollout status deployment/app --timeout=120s
