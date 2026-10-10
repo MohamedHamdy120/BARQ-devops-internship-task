@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: default-deny-ingress, namespace: barq}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: allow-nginx-ingress, namespace: barq}
+spec:
+  podSelector: {matchLabels: {app: nginx}}
+  policyTypes: [Ingress]
+  ingress: [{}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: allow-nginx-to-app, namespace: barq}
+spec:
+  podSelector: {matchLabels: {app: app}}
+  policyTypes: [Ingress]
+  ingress:
+  - from: [{podSelector: {matchLabels: {app: nginx}}}]
+    ports: [{port: 8080}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: allow-app-to-db, namespace: barq}
+spec:
+  podSelector:
+    matchExpressions: [{key: app, operator: In, values: [postgres, redis]}]
+  policyTypes: [Ingress]
+  ingress:
+  - from: [{podSelector: {matchLabels: {app: app}}}]
+    ports: [{port: 5432}, {port: 6379}]
+
