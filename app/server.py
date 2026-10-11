@@ -10,7 +10,7 @@ import redis
 from flask import Flask, g, jsonify, request
 from werkzeug.exceptions import HTTPException
 
-VERSION = "2.0.2"
+VERSION = "2.0.3"
 
 def log_event(level, event, **fields):
     print(json.dumps({"timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
